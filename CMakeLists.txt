@@ -19,6 +19,7 @@ endif()
 set(DISTOPIA_ROOT_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
 set(DISTOPIA_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/distopia/lib)
 set(DISTOPIA_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/distopia/lib)
+set(VCL2_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/distopia/vcl2)
 set(DISTOPIA_TEST_DIR ${CMAKE_CURRENT_LIST_DIR}/distopia/tests)
 set(DISTOPIA_COMPARE_DIR ${CMAKE_CURRENT_LIST_DIR}/distopia/compare)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
@@ -233,7 +234,7 @@ elseif(DISTOPIA_USE_AVX512 AND AVX512_SUPPORTED)
 
 else()
   set(DISTOPIA_FALLTHROUGH true)
-  message(STATUS "${Cyan} No SIMD type explicitly selected, fallthrough to -O3 flags.${ColourReset}")
+  message(STATUS "${Cyan} No SIMD type explicitly selected, fallthrough to -march=native -mtune=native -O3 flags.${ColourReset}")
   add_compile_definitions(DISTOPIA_FALLTHROUGH=1)
 endif()
 
@@ -282,6 +283,7 @@ list (APPEND distopia_src ${compare_src})
 
 include_directories(distopia ${DISTOPIA_INCLUDE_DIR})
 include_directories(distopia ${DISTOPIA_COMPARE_DIR})
+include_directories(distopia ${VCL2_INCLUDE_DIR})
 add_library(distopia SHARED ${distopia_src})
 
 target_compile_options(distopia
@@ -313,32 +315,7 @@ if(DISTOPIA_BUILD_TEST)
 
   # discover tests so that make test will work
   gtest_discover_tests(tests WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-  # test executable for actual distances
-  add_executable(test_kernels  ${DISTOPIA_TEST_DIR}/test_kernels.cpp)
-  target_compile_options(test_kernels
-    PRIVATE
-      ${CXX_FLAGS}
-      "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
-      "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
-      "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
-    )
-  target_link_libraries(test_kernels distopia)
-  target_link_libraries(test_kernels gtest gtest_main)
-  gtest_discover_tests(test_kernels WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
-
-  add_executable(test_mda_match  ${DISTOPIA_TEST_DIR}/test_mda_match.cpp)
-  target_compile_options(test_mda_match
-    PRIVATE
-      ${CXX_FLAGS}
-      "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
-      "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
-      "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
-    )
-  target_link_libraries(test_mda_match distopia)
-  target_link_libraries(test_mda_match gtest gtest_main)
-  # discover tests so that make test will work
-  gtest_discover_tests(test_mda_match WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
 
 if(DISTOPIA_BUILD_TIMINGS)
