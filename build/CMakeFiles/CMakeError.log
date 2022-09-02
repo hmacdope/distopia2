@@ -1,0 +1,124 @@
+Performing C SOURCE FILE Test C_HAS_AVX512_1 failed with the following compile output:
+Change Dir: /store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_bf9ff/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_bf9ff.dir/build.make CMakeFiles/cmTC_bf9ff.dir/build
+gmake[1]: Entering directory '/store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_bf9ff.dir/src.c.o
+/usr/bin/cc -DC_HAS_AVX512_1  -mavx512 -o CMakeFiles/cmTC_bf9ff.dir/src.c.o -c /store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp/src.c
+cc: error: unrecognized command-line option ‘-mavx512’; did you mean ‘-mavx512f’?
+gmake[1]: *** [CMakeFiles/cmTC_bf9ff.dir/build.make:78: CMakeFiles/cmTC_bf9ff.dir/src.c.o] Error 1
+gmake[1]: Leaving directory '/store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_bf9ff/fast] Error 2
+
+
+...and run output:
+
+Return value: 1
+Source file was:
+
+#if defined __AVX512__ || defined __AVX512F__
+#include <immintrin.h>
+void test()
+{
+    __m512i zmm = _mm512_setzero_si512();
+#if defined __GNUC__ && defined __x86_64__
+    asm volatile ("" : : : "zmm16", "zmm17", "zmm18", "zmm19");
+#endif
+}
+#else
+#error "AVX512 is not supported" 
+#endif
+int main() { return 0; }
+Performing C SOURCE FILE Test C_HAS_AVX512_2 failed with the following compile output:
+Change Dir: /store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_16d1a/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_16d1a.dir/build.make CMakeFiles/cmTC_16d1a.dir/build
+gmake[1]: Entering directory '/store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_16d1a.dir/src.c.o
+/usr/bin/cc -DC_HAS_AVX512_2  /arch:AVX512 -o CMakeFiles/cmTC_16d1a.dir/src.c.o -c /store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp/src.c
+cc: error: /arch:AVX512: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_16d1a.dir/build.make:78: CMakeFiles/cmTC_16d1a.dir/src.c.o] Error 1
+gmake[1]: Leaving directory '/store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_16d1a/fast] Error 2
+
+
+...and run output:
+
+Return value: 1
+Source file was:
+
+#if defined __AVX512__ || defined __AVX512F__
+#include <immintrin.h>
+void test()
+{
+    __m512i zmm = _mm512_setzero_si512();
+#if defined __GNUC__ && defined __x86_64__
+    asm volatile ("" : : : "zmm16", "zmm17", "zmm18", "zmm19");
+#endif
+}
+#else
+#error "AVX512 is not supported" 
+#endif
+int main() { return 0; }
+Performing C SOURCE FILE Test CXX_HAS_AVX512_1 failed with the following compile output:
+Change Dir: /store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_5219d/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_5219d.dir/build.make CMakeFiles/cmTC_5219d.dir/build
+gmake[1]: Entering directory '/store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_5219d.dir/src.c.o
+/usr/bin/cc -DCXX_HAS_AVX512_1  -mavx512 -o CMakeFiles/cmTC_5219d.dir/src.c.o -c /store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp/src.c
+cc: error: unrecognized command-line option ‘-mavx512’; did you mean ‘-mavx512f’?
+gmake[1]: *** [CMakeFiles/cmTC_5219d.dir/build.make:78: CMakeFiles/cmTC_5219d.dir/src.c.o] Error 1
+gmake[1]: Leaving directory '/store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_5219d/fast] Error 2
+
+
+...and run output:
+
+Return value: 1
+Source file was:
+
+#if defined __AVX512__ || defined __AVX512F__
+#include <immintrin.h>
+void test()
+{
+    __m512i zmm = _mm512_setzero_si512();
+#if defined __GNUC__ && defined __x86_64__
+    asm volatile ("" : : : "zmm16", "zmm17", "zmm18", "zmm19");
+#endif
+}
+#else
+#error "AVX512 is not supported" 
+#endif
+int main() { return 0; }
+Performing C SOURCE FILE Test CXX_HAS_AVX512_2 failed with the following compile output:
+Change Dir: /store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_5697a/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_5697a.dir/build.make CMakeFiles/cmTC_5697a.dir/build
+gmake[1]: Entering directory '/store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_5697a.dir/src.c.o
+/usr/bin/cc -DCXX_HAS_AVX512_2  /arch:AVX512 -o CMakeFiles/cmTC_5697a.dir/src.c.o -c /store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp/src.c
+cc: error: /arch:AVX512: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_5697a.dir/build.make:78: CMakeFiles/cmTC_5697a.dir/src.c.o] Error 1
+gmake[1]: Leaving directory '/store/MDA_project/distopia2/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_5697a/fast] Error 2
+
+
+...and run output:
+
+Return value: 1
+Source file was:
+
+#if defined __AVX512__ || defined __AVX512F__
+#include <immintrin.h>
+void test()
+{
+    __m512i zmm = _mm512_setzero_si512();
+#if defined __GNUC__ && defined __x86_64__
+    asm volatile ("" : : : "zmm16", "zmm17", "zmm18", "zmm19");
+#endif
+}
+#else
+#error "AVX512 is not supported" 
+#endif
+int main() { return 0; }
