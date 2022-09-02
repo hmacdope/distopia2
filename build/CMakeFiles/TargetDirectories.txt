@@ -1,7 +1,0 @@
-/store/MDA_project/distopia2/build/CMakeFiles/distopia.dir
-/store/MDA_project/distopia2/build/CMakeFiles/edit_cache.dir
-/store/MDA_project/distopia2/build/CMakeFiles/rebuild_cache.dir
-/store/MDA_project/distopia2/build/CMakeFiles/list_install_components.dir
-/store/MDA_project/distopia2/build/CMakeFiles/install.dir
-/store/MDA_project/distopia2/build/CMakeFiles/install/local.dir
-/store/MDA_project/distopia2/build/CMakeFiles/install/strip.dir
