@@ -2,6 +2,7 @@
 #define DISTOPIA_VECTOR_TRIPLE_H
 
 #include "distopia_type_traits.h"
+#include "simd_swizzles.h"
 
 template <typename VectorT>
 class VectorTriple
@@ -41,9 +42,6 @@ public:
 
         // Deinterleave inplace
         // Deinterleave<VectorT>(t1 , t2, t3, x, y, z)
-        x = t1;
-        y = t2;
-        z = t3;
     }
 
     void debug_print(const char *nm)
