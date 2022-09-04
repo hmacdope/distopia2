@@ -30,7 +30,6 @@ public:
         x.load(source);
         y.load(source + size);
         z.load(source + 2 * size);
-
     }
 
     void load_and_deinterleave(const ScalarT *source)
@@ -46,7 +45,16 @@ public:
         y = t2;
         z = t3;
     }
-    
+
+    void debug_print(const char *nm)
+    {
+        ScalarT debug[ValuesPerPack<VectorT> * 3];
+        this->store(debug);
+        std::cerr << nm << " ";
+        for (unsigned char i = 0; i < ValuesPerPack<VectorT> * 3; ++i)
+            std::cerr << debug[i] << " ";
+        std::cerr << "\n";
+    }
 };
 
 template <typename VectorT>
