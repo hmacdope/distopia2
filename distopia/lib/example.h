@@ -1,6 +1,8 @@
 
 #include "vectorclass.h"
 
+#include "distopia_type_traits.h" 
+
 void saxpy(const float aval, const float bval)
 {
 
