@@ -27,14 +27,26 @@ public:
     void load(const ScalarT *source)
     {
         VectorT t1, t2, t3;
+        x.load(source);
+        y.load(source + size);
+        z.load(source + 2 * size);
+
+    }
+
+    void load_and_deinterleave(const ScalarT *source)
+    {
+        VectorT t1, t2, t3;
         t1.load(source);
         t2.load(source + size);
         t3.load(source + 2 * size);
 
+        // Deinterleave inplace
+        // Deinterleave<VectorT>(t1 , t2, t3, x, y, z)
         x = t1;
         y = t2;
         z = t3;
     }
+    
 };
 
 template <typename VectorT>
