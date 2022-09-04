@@ -18,6 +18,9 @@ public:
     // number of values per vector
     static constexpr std::size_t size = ValuesPerPack<VectorT>;
 
+    // allow a default constructor
+    VectorTriple() = default;
+
     inline VectorTriple(const VectorT a, const VectorT b, const VectorT c)
         : x(a), y(b), z(c) {}
 
@@ -27,6 +30,10 @@ public:
         t1.load(source);
         t2.load(source + size);
         t3.load(source + 2 * size);
+
+        x = t1;
+        y = t2;
+        z = t3;
     }
 };
 
