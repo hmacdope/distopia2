@@ -42,6 +42,28 @@ inline void Deinterleave8(const VectorT a, const VectorT b, const VectorT c,
 {
     static_assert(ValuesPerPack<VectorT> == 8,
                   "can only use to load into SIMD datatype of width 8");
+
+    // PRE: a = x0y0z0x1y1z1x2y2, b = z2x3y3z3x4y4z4x5, c = y5z5x6y6z6x7y7z7
+
+    // blend halves
+    VectorT m1 = blend8<0, 1, 2, 3, 12, 13, 14, 15>(a, b);
+    // m1 = x0y0z0x1x4y4z4x5
+    VectorT m2 = blend8<4, 5, 6, 7, 8, 9, 10, 11>(a, c);
+    // m2 = y1z1x2y2y5z5x6y6
+    VectorT m3 = blend8<0, 1, 2, 3, 12, 13, 14, 15>(b, c);
+    // m3 = z2x3y3z3z6x7y7z7
+
+    VectorT t1 = blend8<2, 3, 9, 10, 6, 7, 13, 14>(m2, m3);
+    // t1 = x2y2x3y3x6y6x7y7
+    VectorT t2 = blend8<1, 2, 8, 9, 5, 6, 12, 13>(m1, m2);
+    // t2 = y0z0y1z1y4z4y5z5
+
+    x = blend8<0, 3, 8, 10, 4, 7, 12, 14>(m1, t1);
+    // x = x0x1x2x3x4x5x6x7
+    y = blend8<0, 2, 9, 11, 4, 6, 13, 15>(t2, t1);
+    // y = y0y1y2y3y4y5y6y7
+    z = blend8<1, 3, 8, 11, 5, 7, 12, 15>(t2, m3);
+    // z = z0z1z2z3z4z5z6z7
 }
 
 template <typename VectorT>

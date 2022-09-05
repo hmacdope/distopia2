@@ -10,6 +10,7 @@
 using testing::Types;
 typedef Types<Vec4f, Vec8f, Vec16f, Vec2d, Vec4d, Vec8d> Implementations;
 typedef Types<Vec4f, Vec4d> Width4Implementations;
+typedef Types<Vec8f, Vec8d> Width8Implementations;
 
 template <typename T>
 class VectorTripleTest : public ::testing::Test
@@ -142,5 +143,67 @@ TYPED_TEST(Deinterleave4Test, Deinterleave)
     ASSERT_FLOAT_EQ(out_buffer3[1], 5);
     ASSERT_FLOAT_EQ(out_buffer3[2], 8);
     ASSERT_FLOAT_EQ(out_buffer3[3], 11);
+    
+}
+
+
+template <typename T>
+class Deinterleave8Test : public ::testing::Test
+{
+public:
+    // blank, we do all the stuff in each test
+};
+
+TYPED_TEST_SUITE(Deinterleave8Test, Width8Implementations);
+
+TYPED_TEST(Deinterleave8Test, Deinterleave)
+{
+
+    TypeParam a(0, 1, 2, 3, 4, 5, 6, 7);
+    TypeParam b(8, 9, 10, 11, 12, 13, 14, 15);
+    TypeParam c(16, 17, 18, 19, 20, 21, 22, 23);
+    TypeParam x;
+    TypeParam y;
+    TypeParam z;
+
+    VectorToScalarT<TypeParam> out_buffer1[ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer2[ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer3[ValuesPerPack<TypeParam>];
+
+    Deinterleave8(a, b, c, x, y, z);
+
+    x.store(out_buffer1);
+    y.store(out_buffer2);
+    z.store(out_buffer3);
+
+    // x expected = 0,3,6,9,12,15,18,21
+    ASSERT_FLOAT_EQ(out_buffer1[0], 0);
+    ASSERT_FLOAT_EQ(out_buffer1[1], 3);
+    ASSERT_FLOAT_EQ(out_buffer1[2], 6);
+    ASSERT_FLOAT_EQ(out_buffer1[3], 9);
+    ASSERT_FLOAT_EQ(out_buffer1[4], 12);
+    ASSERT_FLOAT_EQ(out_buffer1[5], 15);
+    ASSERT_FLOAT_EQ(out_buffer1[6], 18);
+    ASSERT_FLOAT_EQ(out_buffer1[7], 21);
+
+    // y expected = 1,4,7,10,13,16,19,22
+    ASSERT_FLOAT_EQ(out_buffer2[0], 1);
+    ASSERT_FLOAT_EQ(out_buffer2[1], 4);
+    ASSERT_FLOAT_EQ(out_buffer2[2], 7);
+    ASSERT_FLOAT_EQ(out_buffer2[3], 10);
+    ASSERT_FLOAT_EQ(out_buffer2[4], 13);
+    ASSERT_FLOAT_EQ(out_buffer2[5], 16);
+    ASSERT_FLOAT_EQ(out_buffer2[6], 19);
+    ASSERT_FLOAT_EQ(out_buffer2[7], 22);
+
+    // y expected = 2,5,8,11,14,17,20,23
+    ASSERT_FLOAT_EQ(out_buffer3[0], 2);
+    ASSERT_FLOAT_EQ(out_buffer3[1], 5);
+    ASSERT_FLOAT_EQ(out_buffer3[2], 8);
+    ASSERT_FLOAT_EQ(out_buffer3[3], 11);
+    ASSERT_FLOAT_EQ(out_buffer3[4], 14);
+    ASSERT_FLOAT_EQ(out_buffer3[5], 17);
+    ASSERT_FLOAT_EQ(out_buffer3[6], 20);
+    ASSERT_FLOAT_EQ(out_buffer3[7], 23);
     
 }
