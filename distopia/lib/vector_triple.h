@@ -41,7 +41,7 @@ public:
         t3.load(source + 2 * size);
 
         // Deinterleave inplace
-        Deinterleave(t1 , t2, t3, x, y, z);
+        Deinterleave(t1, t2, t3, x, y, z);
     }
 
     void debug_print(const char *nm)

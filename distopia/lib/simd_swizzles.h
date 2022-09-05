@@ -89,31 +89,30 @@ inline void Deinterleave16(const VectorT a, const VectorT b, const VectorT c,
     // instructions out of AVX512
     // hopefully the use of 2 independent pipelines is faster
 
-    HalfVectorT<VectorT> a_low = a.get_low();   // a equivalent 
+    HalfVectorT<VectorT> a_low = a.get_low();   // a equivalent
     HalfVectorT<VectorT> a_high = a.get_high(); // b equivalent
     HalfVectorT<VectorT> b_low = b.get_low();   // c equivalent
     HalfVectorT<VectorT> x_low;
     HalfVectorT<VectorT> y_low;
     HalfVectorT<VectorT> z_low;
 
-    Deinterleave8(a_low, a_high, b_low, x_low, y_low, z_low);  
+    Deinterleave8(a_low, a_high, b_low, x_low, y_low, z_low);
 
-    HalfVectorT<VectorT> b_high = b.get_high(); // a equivalent 
-    HalfVectorT<VectorT> c_low = c.get_low();    // b equivalent
+    HalfVectorT<VectorT> b_high = b.get_high(); // a equivalent
+    HalfVectorT<VectorT> c_low = c.get_low();   // b equivalent
     HalfVectorT<VectorT> c_high = c.get_high(); // c equivalent
     HalfVectorT<VectorT> x_high;
-    HalfVectorT<VectorT> y_high; 
+    HalfVectorT<VectorT> y_high;
     HalfVectorT<VectorT> z_high;
 
-
-    Deinterleave8(b_high, c_low, c_high, x_high, y_high, z_high);  
+    Deinterleave8(b_high, c_low, c_high, x_high, y_high, z_high);
 
     x = concatenate2(x_low, x_high);
     y = concatenate2(y_low, y_high);
     z = concatenate2(z_low, z_high);
 }
 
-// As the deinterleaves were generic now we need overloads for each option 
+// As the deinterleaves were generic now we need overloads for each option
 inline void Deinterleave(Vec2d a, Vec2d b, Vec2d c, Vec2d &x, Vec2d &y, Vec2d &z)
 {
     Deinterleave2(a, b, c, x, y, z);

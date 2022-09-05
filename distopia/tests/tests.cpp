@@ -66,7 +66,6 @@ TYPED_TEST(VectorTripleTest, LoadFromBuffer)
         ASSERT_FLOAT_EQ(input_buffer[ValuesPerPack<TypeParam> + j], out_buffer2[j]);
         ASSERT_FLOAT_EQ(input_buffer[ValuesPerPack<TypeParam> * 2 + j], out_buffer3[j]);
     }
-
 }
 
 TYPED_TEST(VectorTripleTest, LoadAndDeinterleave)
@@ -85,7 +84,8 @@ TYPED_TEST(VectorTripleTest, LoadAndDeinterleave)
     vt.y.store(out_buffer2);
     vt.z.store(out_buffer3);
 
-    for (int i = 0; i < vt.size; i++) {
+    for (int i = 0; i < vt.size; i++)
+    {
         ASSERT_FLOAT_EQ(out_buffer1[i], static_cast<float>(3 * i));
         ASSERT_FLOAT_EQ(out_buffer2[i], static_cast<float>(3 * i + 1));
         ASSERT_FLOAT_EQ(out_buffer3[i], static_cast<float>(3 * i + 2));
