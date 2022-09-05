@@ -77,7 +77,7 @@ inline void Deinterleave16(const VectorT a, const VectorT b, const VectorT c,
     // TODO: Can these be done better with gather or lookup functions?
     static_assert(ValuesPerPack<VectorT> == 16,
                   "can only use to load into SIMD datatype of width 16");
-    
+
     // PRE: a = x0y0z0x1y1z1x2y2z2x3y3z3x4y4z4x5
     // PRE: b = y5z5x6y6z6x7y7z7x8y8z8x9y9z9x10y10
     // PRE: c = z10x11y11z11x12y12z12x13y13z13x14y14z14x15y15z15
@@ -85,10 +85,9 @@ inline void Deinterleave16(const VectorT a, const VectorT b, const VectorT c,
     // split into registers and apply same blends as Deinterleave8, this is a little lazy but
     // hopefully the use of 2 independent pipelines is faster
 
-    HalfVectorT<VectorT> a_low = a.get_low(); // a
+    HalfVectorT<VectorT> a_low = a.get_low();   // a
     HalfVectorT<VectorT> a_high = a.get_high(); // b
-    HalfVectorT<VectorT> b_low = b.get_low(); // c
-
+    HalfVectorT<VectorT> b_low = b.get_low();   // c
 
     // blend halves
     HalfVectorT<VectorT> m1_low = blend8<0, 1, 2, 3, 12, 13, 14, 15>(a_low, a_high);
@@ -110,9 +109,8 @@ inline void Deinterleave16(const VectorT a, const VectorT b, const VectorT c,
     HalfVectorT<VectorT> z_low = blend8<1, 3, 8, 11, 5, 7, 12, 15>(t2_low, m3_low);
     // z = z0z1z2z3z4z5z6z7
 
-
     HalfVectorT<VectorT> b_high = b.get_high(); // a
-    HalfVectorT<VectorT> c_low = c.get_low(); // b
+    HalfVectorT<VectorT> c_low = c.get_low();   // b
     HalfVectorT<VectorT> c_high = c.get_high(); // c
 
     // blend halves
@@ -135,10 +133,40 @@ inline void Deinterleave16(const VectorT a, const VectorT b, const VectorT c,
     HalfVectorT<VectorT> z_high = blend8<1, 3, 8, 11, 5, 7, 12, 15>(t2_high, m3_high);
     // z = z0z1z2z3z4z5z6z7
 
-    x = concatenate2(x_low,x_high);
+    x = concatenate2(x_low, x_high);
     y = concatenate2(y_low, y_high);
     z = concatenate2(z_low, z_high);
+}
 
+// As the deinterleaves were generic now we need overloads for each option 
+inline void Deinterleave(Vec2d a, Vec2d b, Vec2d c, Vec2d &x, Vec2d &y, Vec2d &z)
+{
+    Deinterleave2(a, b, c, x, y, z);
+}
+
+inline void Deinterleave(Vec4f a, Vec4f b, Vec4f c, Vec4f &x, Vec4f &y, Vec4f &z)
+{
+    Deinterleave4(a, b, c, x, y, z);
+}
+
+inline void Deinterleave(Vec4d a, Vec4d b, Vec4d c, Vec4d &x, Vec4d &y, Vec4d &z)
+{
+    Deinterleave4(a, b, c, x, y, z);
+}
+
+inline void Deinterleave(Vec8f a, Vec8f b, Vec8f c, Vec8f &x, Vec8f &y, Vec8f &z)
+{
+    Deinterleave8(a, b, c, x, y, z);
+}
+
+inline void Deinterleave(Vec8d a, Vec8d b, Vec8d c, Vec8d &x, Vec8d &y, Vec8d &z)
+{
+    Deinterleave8(a, b, c, x, y, z);
+}
+
+inline void Deinterleave(Vec16f a, Vec16f b, Vec16f c, Vec16f &x, Vec16f &y, Vec16f &z)
+{
+    Deinterleave16(a, b, c, x, y, z);
 }
 
 #endif // DISTOPIA_SIMD_SWIZZLE_H

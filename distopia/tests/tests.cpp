@@ -50,9 +50,9 @@ TYPED_TEST(VectorTripleTest, LoadFromBuffer)
     auto vt = VectorTriple<TypeParam>();
 
     VectorToScalarT<TypeParam> input_buffer[3 * ValuesPerPack<TypeParam>];
-    VectorToScalarT<TypeParam> out_buffer1[3 * ValuesPerPack<TypeParam>];
-    VectorToScalarT<TypeParam> out_buffer2[3 * ValuesPerPack<TypeParam>];
-    VectorToScalarT<TypeParam> out_buffer3[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer1[ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer2[ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer3[ValuesPerPack<TypeParam>];
 
     std::iota(std::begin(input_buffer), std::end(input_buffer), 0);
 
@@ -66,6 +66,30 @@ TYPED_TEST(VectorTripleTest, LoadFromBuffer)
         ASSERT_FLOAT_EQ(input_buffer[j], out_buffer1[j]);
         ASSERT_FLOAT_EQ(input_buffer[ValuesPerPack<TypeParam> + j], out_buffer2[j]);
         ASSERT_FLOAT_EQ(input_buffer[ValuesPerPack<TypeParam> * 2 + j], out_buffer3[j]);
+    }
+
+}
+
+TYPED_TEST(VectorTripleTest, LoadAndDeinterleave)
+{
+    auto vt = VectorTriple<TypeParam>();
+
+    VectorToScalarT<TypeParam> input_buffer[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer1[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer2[3 * ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer3[3 * ValuesPerPack<TypeParam>];
+
+    std::iota(std::begin(input_buffer), std::end(input_buffer), 0);
+
+    vt.load_and_deinterleave(input_buffer);
+    vt.x.store(out_buffer1);
+    vt.y.store(out_buffer2);
+    vt.z.store(out_buffer3);
+
+    for (int i = 0; i < vt.size; i++) {
+        ASSERT_FLOAT_EQ(out_buffer1[i], static_cast<float>(3 * i));
+        ASSERT_FLOAT_EQ(out_buffer2[i], static_cast<float>(3 * i + 1));
+        ASSERT_FLOAT_EQ(out_buffer3[i], static_cast<float>(3 * i + 2));
     }
 }
 
@@ -239,13 +263,10 @@ TEST(Deinterleave16Test, Deinterleave)
     y.store(out_buffer2);
     z.store(out_buffer3);
 
-    for (int i=0; i<16; i++) {
-        ASSERT_FLOAT_EQ(out_buffer1[i], static_cast<float>(3*i));
-        ASSERT_FLOAT_EQ(out_buffer2[i], static_cast<float>(3*i + 1));
-        ASSERT_FLOAT_EQ(out_buffer3[i], static_cast<float>(3*i + 2));
-
+    for (int i = 0; i < 16; i++)
+    {
+        ASSERT_FLOAT_EQ(out_buffer1[i], static_cast<float>(3 * i));
+        ASSERT_FLOAT_EQ(out_buffer2[i], static_cast<float>(3 * i + 1));
+        ASSERT_FLOAT_EQ(out_buffer3[i], static_cast<float>(3 * i + 2));
     }
-
-
-
 }
