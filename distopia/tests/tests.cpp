@@ -143,9 +143,7 @@ TYPED_TEST(Deinterleave4Test, Deinterleave)
     ASSERT_FLOAT_EQ(out_buffer3[1], 5);
     ASSERT_FLOAT_EQ(out_buffer3[2], 8);
     ASSERT_FLOAT_EQ(out_buffer3[3], 11);
-    
 }
-
 
 template <typename T>
 class Deinterleave8Test : public ::testing::Test
@@ -205,5 +203,49 @@ TYPED_TEST(Deinterleave8Test, Deinterleave)
     ASSERT_FLOAT_EQ(out_buffer3[5], 17);
     ASSERT_FLOAT_EQ(out_buffer3[6], 20);
     ASSERT_FLOAT_EQ(out_buffer3[7], 23);
-    
+}
+
+// only Vec16f has width = 16 so no need for typed test
+// more programmatic version of the above test because typing all the indices is
+// tiring
+TEST(Deinterleave16Test, Deinterleave)
+{
+
+    float in_buffer1[16];
+    float in_buffer2[16];
+    float in_buffer3[16];
+
+    std::iota(std::begin(in_buffer1), std::end(in_buffer1), 0);
+    std::iota(std::begin(in_buffer2), std::end(in_buffer2), 16);
+    std::iota(std::begin(in_buffer3), std::end(in_buffer3), 32);
+
+    Vec16f a;
+    a.load(in_buffer1);
+    Vec16f b;
+    b.load(in_buffer2);
+    Vec16f c;
+    c.load(in_buffer3);
+    Vec16f x;
+    Vec16f y;
+    Vec16f z;
+
+    float out_buffer1[16];
+    float out_buffer2[16];
+    float out_buffer3[16];
+
+    Deinterleave16(a, b, c, x, y, z);
+
+    x.store(out_buffer1);
+    y.store(out_buffer2);
+    z.store(out_buffer3);
+
+    for (int i=0; i<16; i++) {
+        ASSERT_FLOAT_EQ(out_buffer1[i], static_cast<float>(3*i));
+        ASSERT_FLOAT_EQ(out_buffer2[i], static_cast<float>(3*i + 1));
+        ASSERT_FLOAT_EQ(out_buffer3[i], static_cast<float>(3*i + 2));
+
+    }
+
+
+
 }

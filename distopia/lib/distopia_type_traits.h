@@ -48,8 +48,39 @@ struct VectorToScalarTStruct<Vec8d>
     using type = double;
 };
 
+
+template <typename VectorT>
+struct HalfVectorTStruct;
+// map each scalar to matching scalar type
+template <>
+struct HalfVectorTStruct<Vec8f>
+{
+    using type = Vec4f;
+};
+
+template <>
+struct HalfVectorTStruct<Vec4d>
+{
+    using type = Vec2d;
+};
+
+template <>
+struct HalfVectorTStruct<Vec16f>
+{
+    using type = Vec8f;
+};
+
+template <>
+struct HalfVectorTStruct<Vec8d>
+{
+    using type = Vec4d;
+};
+
 template <typename VectorT>
 using VectorToScalarT = typename VectorToScalarTStruct<VectorT>::type;
+
+template <typename VectorT>
+using HalfVectorT = typename HalfVectorTStruct<VectorT>::type;
 
 template <typename T>
 constexpr std::size_t ValuesPerPack = sizeof(T) / sizeof(VectorToScalarT<T>);
