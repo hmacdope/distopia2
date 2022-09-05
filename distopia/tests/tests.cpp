@@ -138,9 +138,9 @@ TYPED_TEST(Deinterleave4Test, Deinterleave)
     ASSERT_FLOAT_EQ(out_buffer2[3], 10);
 
     // z expected = 2,5,8,11
-    ASSERT_FLOAT_EQ(out_buffer2[0], 2);
-    ASSERT_FLOAT_EQ(out_buffer2[1], 5);
-    ASSERT_FLOAT_EQ(out_buffer2[2], 8);
-    ASSERT_FLOAT_EQ(out_buffer2[3], 11);
+    ASSERT_FLOAT_EQ(out_buffer3[0], 2);
+    ASSERT_FLOAT_EQ(out_buffer3[1], 5);
+    ASSERT_FLOAT_EQ(out_buffer3[2], 8);
+    ASSERT_FLOAT_EQ(out_buffer3[3], 11);
     
 }
