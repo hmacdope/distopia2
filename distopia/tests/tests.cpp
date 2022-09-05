@@ -3,7 +3,6 @@
 
 #include "gtest/gtest.h"
 
-#include "../lib/example.h"
 #include "../lib/simd_swizzles.h"
 #include "../lib/vector_triple.h"
 
