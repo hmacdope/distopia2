@@ -1,3 +1,6 @@
 [submodule "distopia/version2"]
 	path = distopia/vcl2
 	url = git@github.com:vectorclass/version2.git
+[submodule "distopia/tests/googletest"]
+	path = distopia/tests/googletest
+	url = git@github.com:google/googletest.git
