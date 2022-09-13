@@ -1,8 +1,10 @@
-#include <numeric>
+#include <cmath>
 #include <iostream>
+#include <numeric>
 
 #include "gtest/gtest.h"
 
+#include "../include/distopia.h"
 #include "../lib/box.h"
 #include "../lib/calc_bonds.h"
 #include "../lib/simd_swizzles.h"
@@ -12,6 +14,7 @@ using testing::Types;
 typedef Types<Vec4f, Vec8f, Vec16f, Vec2d, Vec4d, Vec8d> Implementations;
 typedef Types<Vec4f, Vec4d> Width4Implementations;
 typedef Types<Vec8f, Vec8d> Width8Implementations;
+typedef Types<float, double> ScalarTypes;
 
 template <typename T>
 class VectorTripleTest : public ::testing::Test
@@ -279,13 +282,28 @@ public:
     // blank, we do all the stuff in each test
 };
 
-TYPED_TEST_SUITE(DistancesTest, Implementations);
+TYPED_TEST_SUITE(DistancesTest, ScalarTypes);
 
 TYPED_TEST(DistancesTest, NoBox)
 {
-    VectorToScalarT<TypeParam> box[3];
-    box[0] = 10;
-    box[1] = 10;
-    box[2] = 10;
+    // larger than the maximum possible vector size (16) and an
+    // odd number for overhang on first loop, see CalcBondsInner.
+    constexpr std::size_t N = 17;
+    TypeParam coords0[3*N];
+    TypeParam coords1[3*N];
+    TypeParam out[N];
+
+    std::iota(std::begin(coords0), std::end(coords0), 0);
+    std::iota(std::begin(coords1), std::end(coords1), 1);
+
+
+    CalcBondsNoBox(coords0, coords1, N, out);
+
+    // result for every item should be sqrt(3);
+    TypeParam result = std::sqrt(3);
+
+    for (int i=0; i<N; i++) {
+        ASSERT_FLOAT_EQ(out[i], result);
+    }
 
 }
