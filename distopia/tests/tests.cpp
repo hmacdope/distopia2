@@ -4,6 +4,7 @@
 
 #include "gtest/gtest.h"
 #include "test_utils.h"
+#include "test_fixtures.h"
 
 #include "distopia/include/distopia.h"
 #include "distopia/lib/box.h"
