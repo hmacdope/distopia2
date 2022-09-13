@@ -2,6 +2,8 @@
 #define DISTOPIA_SIMD_SWIZZLE_H
 
 #include "distopia_type_traits.h"
+#include "vectorclass.h"
+
 
 template <typename VectorT>
 inline void Deinterleave2(const VectorT a, const VectorT b, const VectorT c,

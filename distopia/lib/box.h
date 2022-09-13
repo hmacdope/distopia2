@@ -6,6 +6,7 @@
 #define DISTOPIA_BOX_H
 
 #include "distopia_type_traits.h"
+#include "vectorclass.h"
 #include "vector_triple.h"
 
 

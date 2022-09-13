@@ -3,6 +3,8 @@
 
 #include "distopia_type_traits.h"
 #include "simd_swizzles.h"
+#include "vectorclass.h"
+
 
 template <typename VectorT>
 class VectorTriple
