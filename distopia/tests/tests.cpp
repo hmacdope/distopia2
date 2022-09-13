@@ -334,22 +334,24 @@ TYPED_TEST(DistancesTest, NoBoxKnownValues1)
     }
 }
 
+TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0)
+{
+    constexpr int N = 10;
+    TypeParam coords0[3 * N] = {0};
+    TypeParam coords1[3 * N] = {0};
+    TypeParam out[N];
+    // values strung out on x axis {0,0,0} {1,0,0}, {2,0,0}
+    for (int i = 0; i < N; i++)
+    {
+        coords1[3 * i] = i;
+    }
+    TypeParam box[3] = {8, 8, 8};
+    TypeParam ref[N] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
 
-TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0) {
-  constexpr int N = 10;
-  TypeParam coords0[3 * N] = {0};
-  TypeParam coords1[3 * N] = {0};
-  TypeParam out[N];
-  // values strung out on x axis {0,0,0} {1,0,0}, {2,0,0}
-  for (int i = 0; i < N; i++) {
-    coords1[3 * i] = i;
-  }
-  TypeParam box[3] = {8, 8, 8};
-  TypeParam ref[N] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
+    CalcBondsOrtho(coords0, coords1, box, N, out);
 
-  CalcBondsOrtho(coords0, coords1, box, N, out);
-
-  for (int i = 0; i < N; i++) {
-    EXPECT_SCALAR_EQ(ref[i], out[i]);
-  }
+    for (int i = 0; i < N; i++)
+    {
+        EXPECT_SCALAR_EQ(ref[i], out[i]);
+    }
 }
