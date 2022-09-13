@@ -3,7 +3,6 @@
 
 #include "gtest/gtest.h"
 
-
 /*! \file 
     \brief Main public header for distopia
     

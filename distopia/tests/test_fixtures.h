@@ -1,5 +1,5 @@
-#ifndef DISTOPIA_FIXTURES_H
-#define DISTOPIA_FIXTURES_H
+#ifndef DISTOPIA_TEST_FIXTURES_H
+#define DISTOPIA_TEST_FIXTURES_H
 
 #include "gtest/gtest.h"
 #include "test_utils.h"
@@ -81,4 +81,4 @@ protected:
   }
 };
 
-#endif // DISTOPIA_FIXTURES_H
+#endif // DISTOPIA_TEST_FIXTURES_H
