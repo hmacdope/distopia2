@@ -41,29 +41,33 @@ namespace
 
 }
 
+
+// Dispatching is done here on the templated functions defined in "distopia.h"
+// MaxVectorT<ScalarT> is used to get the largest possible vector for our 
+// instruction set.
 template <>
 void CalcBondsOrtho(const float *coords0, const float *coords1,
                     const float *box, std::size_t n, float *out)
 {
-    CalcBondsInner<Vec16f, OrthogonalBox<Vec16f>>(coords0, coords1, box, n, out);
+    CalcBondsInner<MaxVectorT<float>, OrthogonalBox<MaxVectorT<float>>>(coords0, coords1, box, n, out);
 }
 template <>
 void CalcBondsOrtho(const double *coords0, const double *coords1,
                     const double *box, std::size_t n, double *out)
 {
-    CalcBondsInner<Vec8d, OrthogonalBox<Vec8d>>(coords0, coords1, box, n, out);
+    CalcBondsInner<MaxVectorT<double>, OrthogonalBox<MaxVectorT<double>>>(coords0, coords1, box, n, out);
 }
 
 template <>
 void CalcBondsNoBox(const float *coords0, const float *coords1, std::size_t n, float *out)
 {
-    CalcBondsInner<Vec16f, NoBox<Vec16f>>(coords0, coords1, nullptr, n, out);
+    CalcBondsInner<MaxVectorT<float>, NoBox<MaxVectorT<float>>>(coords0, coords1, nullptr, n, out);
 }
 
 template <>
 void CalcBondsNoBox(const double *coords0, const double *coords1, std::size_t n, double *out)
 {
-    CalcBondsInner<Vec8d, NoBox<Vec8d>>(coords0, coords1, nullptr,  n, out);
+    CalcBondsInner<MaxVectorT<double>, NoBox<MaxVectorT<double>>>(coords0, coords1, nullptr,  n, out);
 }
 
 #endif // DISTOPIA_CALC_BONDS_H

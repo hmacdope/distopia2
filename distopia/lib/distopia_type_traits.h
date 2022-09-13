@@ -48,7 +48,6 @@ struct VectorToScalarTStruct<Vec8d>
     using type = double;
 };
 
-
 template <typename VectorT>
 struct HalfVectorTStruct;
 // map each scalar to matching scalar type
@@ -76,11 +75,50 @@ struct HalfVectorTStruct<Vec8d>
     using type = Vec4d;
 };
 
+template <typename ScalarT>
+struct MaxVectorTStruct;
+// map each scalar to matching scalar type
+
+template <>
+struct MaxVectorTStruct<float>
+{
+#if INSTRSET >= 9 // AVX512
+    using type = Vec16f;
+#elif INSTRSET >= 8 // AVX2
+    using type = Vec8f;
+#elif INSTRSET >= 7 // AVX 
+    using type = Vec8f;
+#elif INSTRSET >= 2 // SSE_something 
+    using type = Vec4f;
+#else
+#error Unsupported instruction set
+#endif
+};
+
+template <>
+struct MaxVectorTStruct<double>
+{
+#if INSTRSET >= 9 // AVX512
+    using type = Vec8d;
+#elif INSTRSET >= 8 // AVX2
+    using type = Vec4d;
+#elif INSTRSET >= 7 // AVX 
+    using type = Vec4d;
+#elif INSTRSET >= 2 // SSE_something 
+    using type = Vec2d;
+#else
+#error Unsupported instruction set
+#endif
+};
+
 template <typename VectorT>
 using VectorToScalarT = typename VectorToScalarTStruct<VectorT>::type;
 
 template <typename VectorT>
 using HalfVectorT = typename HalfVectorTStruct<VectorT>::type;
+
+template <typename ScalarT>
+using MaxVectorT = typename MaxVectorTStruct<ScalarT>::type;
 
 template <typename T>
 constexpr std::size_t ValuesPerPack = sizeof(T) / sizeof(VectorToScalarT<T>);
