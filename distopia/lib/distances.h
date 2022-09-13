@@ -8,32 +8,27 @@
 #include "vector_triple.h"
 
 template <typename VectorT, typename BoxT>
-inline VectorT _PBC_Distance(const VectorTriple<VectorT> &p1, const VectorTriple<VectorT> &p2, const BoxT &box)
+inline VectorT PBC_Distance(const VectorTriple<VectorT> &p1, const VectorTriple<VectorT> &p2, const BoxT &box)
 {
 }
 
-
 template <typename VectorT, typename BoxT>
-inline VectorT _PBC_Distance(const VectorTriple<VectorT> &p1, const VectorTriple<VectorT> &p2, const NoBox &box)
+inline VectorT PBC_Distance(const VectorTriple<VectorT> &p1, const VectorTriple<VectorT> &p2, const NoBox<VectorT> &box)
 {
   VectorTriple<VectorT> delta = p1 - p2;
   VectorTriple<VectorT> r2 = delta * delta;
   VectorT r = r2.x + r2.y + r2.z;
   return sqrt(r);
-
 }
 
 template <typename VectorT, typename BoxT>
-inline VectorT _PBC_Distance(const VectorTriple<VectorT> &p1, const VectorTriple<VectorT> &p2, const OrthogonalBox &box)
+inline VectorT PBC_Distance(const VectorTriple<VectorT> &p1, const VectorTriple<VectorT> &p2, const OrthogonalBox<VectorT> &box)
 {
 }
-
 
 template <typename VectorT, typename BoxT>
-inline VectorT _PBC_Distance(const VectorTriple<VectorT> &p1, const VectorTriple<VectorT> &p2, const TriclinicBox &box)
+inline VectorT PBC_Distance(const VectorTriple<VectorT> &p1, const VectorTriple<VectorT> &p2, const TriclinicBox<VectorT> &box)
 {
-  
 }
-
 
 #endif // DISTOPIA_DISTANCES_H

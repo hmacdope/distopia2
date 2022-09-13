@@ -3,6 +3,8 @@
 
 #include "gtest/gtest.h"
 
+#include "../lib/box.h"
+#include "../lib/calc_bonds.h"
 #include "../lib/simd_swizzles.h"
 #include "../lib/vector_triple.h"
 
@@ -268,4 +270,22 @@ TEST(Deinterleave16Test, Deinterleave)
         ASSERT_FLOAT_EQ(out_buffer2[i], static_cast<float>(3 * i + 1));
         ASSERT_FLOAT_EQ(out_buffer3[i], static_cast<float>(3 * i + 2));
     }
+}
+
+template <typename T>
+class DistancesTest : public ::testing::Test
+{
+public:
+    // blank, we do all the stuff in each test
+};
+
+TYPED_TEST_SUITE(DistancesTest, Implementations);
+
+TYPED_TEST(DistancesTest, NoBox)
+{
+    VectorToScalarT<TypeParam> box[3];
+    box[0] = 10;
+    box[1] = 10;
+    box[2] = 10;
+
 }
