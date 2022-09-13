@@ -5,11 +5,11 @@
 #include "gtest/gtest.h"
 #include "test_utils.h"
 
-#include "../include/distopia.h"
-#include "../lib/box.h"
-#include "../lib/calc_bonds.h"
-#include "../lib/simd_swizzles.h"
-#include "../lib/vector_triple.h"
+#include "distopia/include/distopia.h"
+#include "distopia/lib/box.h"
+#include "distopia/lib/calc_bonds.h"
+#include "distopia/lib/simd_swizzles.h"
+#include "distopia/lib/vector_triple.h"
 
 using testing::Types;
 typedef Types<Vec4f, Vec8f, Vec16f, Vec2d, Vec4d, Vec8d> Implementations;
