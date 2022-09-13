@@ -30,8 +30,8 @@ namespace
     {
       return min(d, y_sub_d);
     }
-    VectorT x0_pbc = remainder(x0, y);
-    VectorT x1_pbc = remainder(x1, y);
+    x0 = remainder(x0, y);
+    x1 = remainder(x1, y);
     d = abs(x0 - x1);
     return min(d, y - d);
   }
