@@ -35,7 +35,7 @@ namespace
             c1.load_and_deinterleave(&coords1[3 * i]);
 
             VectorT result = PBC_Distance(c0, c1, vecbox);
-            result.store(out);
+            result.store(&out[i]);
         }
     }
 
