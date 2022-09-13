@@ -11,6 +11,15 @@
 namespace
 {
   template <typename VectorT>
+  inline VectorT remainder(VectorT x, VectorT y)
+  {
+    // FIXME possible rounding error, replace with extended precision version
+    // at some point, see VCL2 source code for more info
+    VectorT wraps_around = round(x / y);
+    return nmul_add(wraps_around, y, x);
+  }
+
+  template <typename VectorT>
   inline VectorT _ortho_pbc(VectorT x0, VectorT x1, VectorT y)
   {
     VectorT d = abs(x0 - x1);
@@ -21,8 +30,8 @@ namespace
     {
       return min(d, y_sub_d);
     }
-    VectorT x0_pbc = fremainder(x0, y);
-    VectorT x1_pbc = fremainder(x1, y);
+    VectorT x0_pbc = remainder(x0, y);
+    VectorT x1_pbc = remainder(x1, y);
     d = abs(x0 - x1);
     return min(d, y - d);
   }
