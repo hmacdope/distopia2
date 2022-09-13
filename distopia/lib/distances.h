@@ -12,7 +12,7 @@ inline VectorT PBC_Distance(const VectorTriple<VectorT> &p1, const VectorTriple<
 {
 }
 
-template <typename VectorT, typename BoxT>
+template <typename VectorT>
 inline VectorT PBC_Distance(const VectorTriple<VectorT> &p1, const VectorTriple<VectorT> &p2, const NoBox<VectorT> &box)
 {
   VectorTriple<VectorT> delta = p1 - p2;
@@ -21,14 +21,16 @@ inline VectorT PBC_Distance(const VectorTriple<VectorT> &p1, const VectorTriple<
   return sqrt(r);
 }
 
-template <typename VectorT, typename BoxT>
+template <typename VectorT>
 inline VectorT PBC_Distance(const VectorTriple<VectorT> &p1, const VectorTriple<VectorT> &p2, const OrthogonalBox<VectorT> &box)
 {
+  return VectorT(1.0);
 }
 
-template <typename VectorT, typename BoxT>
+template <typename VectorT>
 inline VectorT PBC_Distance(const VectorTriple<VectorT> &p1, const VectorTriple<VectorT> &p2, const TriclinicBox<VectorT> &box)
 {
+  return VectorT(1.0);
 }
 
 #endif // DISTOPIA_DISTANCES_H
