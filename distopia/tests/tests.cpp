@@ -92,9 +92,9 @@ TYPED_TEST(VectorTripleTest, LoadAndDeinterleave)
 
     for (int i = 0; i < vt.size; i++)
     {
-        EXPECT_SCALAR_EQ(out_buffer1[i], static_cast<float>(3 * i));
-        EXPECT_SCALAR_EQ(out_buffer2[i], static_cast<float>(3 * i + 1));
-        EXPECT_SCALAR_EQ(out_buffer3[i], static_cast<float>(3 * i + 2));
+        EXPECT_SCALAR_EQ(out_buffer1[i], 3 * i);
+        EXPECT_SCALAR_EQ(out_buffer2[i], 3 * i + 1);
+        EXPECT_SCALAR_EQ(out_buffer3[i], 3 * i + 2);
     }
 }
 
@@ -270,9 +270,9 @@ TEST(Deinterleave16Test, Deinterleave)
 
     for (int i = 0; i < 16; i++)
     {
-        EXPECT_SCALAR_EQ(out_buffer1[i], static_cast<float>(3 * i));
-        EXPECT_SCALAR_EQ(out_buffer2[i], static_cast<float>(3 * i + 1));
-        EXPECT_SCALAR_EQ(out_buffer3[i], static_cast<float>(3 * i + 2));
+        EXPECT_SCALAR_EQ(out_buffer1[i], 3 * i);
+        EXPECT_SCALAR_EQ(out_buffer2[i], 3 * i + 1);
+        EXPECT_SCALAR_EQ(out_buffer3[i], 3 * i + 2);
     }
 }
 
@@ -332,4 +332,24 @@ TYPED_TEST(DistancesTest, NoBoxKnownValues1)
     {
         EXPECT_FLOAT_EQ(out[i], ref[i]);
     }
+}
+
+
+TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0) {
+  constexpr int N = 10;
+  TypeParam coords0[3 * N] = {0};
+  TypeParam coords1[3 * N] = {0};
+  TypeParam out[N];
+  // values strung out on x axis {0,0,0} {1,0,0}, {2,0,0}
+  for (int i = 0; i < N; i++) {
+    coords1[3 * i] = i;
+  }
+  TypeParam box[3] = {8, 8, 8};
+  TypeParam ref[N] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
+
+  CalcBondsOrtho(coords0, coords1, box, N, out);
+
+  for (int i = 0; i < N; i++) {
+    EXPECT_SCALAR_EQ(ref[i], out[i]);
+  }
 }
