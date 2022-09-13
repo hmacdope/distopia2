@@ -5,7 +5,6 @@
 #include "distances.h"
 #include "../include/distopia.h"
 #include "distopia_type_traits.h"
-#include "util.h"
 #include "vectorclass.h"
 #include "vector_triple.h"
 
