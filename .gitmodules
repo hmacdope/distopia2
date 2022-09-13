@@ -4,3 +4,6 @@
 [submodule "distopia/tests/googletest"]
 	path = distopia/tests/googletest
 	url = git@github.com:google/googletest.git
+[submodule "distopia/tests/benchmark"]
+	path = distopia/tests/googlebench
+	url = git@github.com:google/benchmark.git
