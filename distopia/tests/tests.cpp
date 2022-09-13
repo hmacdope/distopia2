@@ -3,6 +3,7 @@
 #include <numeric>
 
 #include "gtest/gtest.h"
+#include "test_utils.h"
 
 #include "../include/distopia.h"
 #include "../lib/box.h"
@@ -43,9 +44,9 @@ TYPED_TEST(VectorTripleTest, Construct)
 
     for (int i = 0; i < vt.size; i++)
     {
-        ASSERT_FLOAT_EQ(out_buffer0[i], out_buffer1[i]);
-        ASSERT_FLOAT_EQ(out_buffer0[i], out_buffer2[i]);
-        ASSERT_FLOAT_EQ(out_buffer0[i], out_buffer3[i]);
+        EXPECT_SCALAR_EQ(out_buffer0[i], out_buffer1[i]);
+        EXPECT_SCALAR_EQ(out_buffer0[i], out_buffer2[i]);
+        EXPECT_SCALAR_EQ(out_buffer0[i], out_buffer3[i]);
     }
 }
 
@@ -67,9 +68,9 @@ TYPED_TEST(VectorTripleTest, LoadFromBuffer)
 
     for (int j = 0; j < vt.size; j++)
     {
-        ASSERT_FLOAT_EQ(input_buffer[j], out_buffer1[j]);
-        ASSERT_FLOAT_EQ(input_buffer[ValuesPerPack<TypeParam> + j], out_buffer2[j]);
-        ASSERT_FLOAT_EQ(input_buffer[ValuesPerPack<TypeParam> * 2 + j], out_buffer3[j]);
+        EXPECT_SCALAR_EQ(input_buffer[j], out_buffer1[j]);
+        EXPECT_SCALAR_EQ(input_buffer[ValuesPerPack<TypeParam> + j], out_buffer2[j]);
+        EXPECT_SCALAR_EQ(input_buffer[ValuesPerPack<TypeParam> * 2 + j], out_buffer3[j]);
     }
 }
 
@@ -91,9 +92,9 @@ TYPED_TEST(VectorTripleTest, LoadAndDeinterleave)
 
     for (int i = 0; i < vt.size; i++)
     {
-        ASSERT_FLOAT_EQ(out_buffer1[i], static_cast<float>(3 * i));
-        ASSERT_FLOAT_EQ(out_buffer2[i], static_cast<float>(3 * i + 1));
-        ASSERT_FLOAT_EQ(out_buffer3[i], static_cast<float>(3 * i + 2));
+        EXPECT_SCALAR_EQ(out_buffer1[i], static_cast<float>(3 * i));
+        EXPECT_SCALAR_EQ(out_buffer2[i], static_cast<float>(3 * i + 1));
+        EXPECT_SCALAR_EQ(out_buffer3[i], static_cast<float>(3 * i + 2));
     }
 }
 
@@ -155,22 +156,22 @@ TYPED_TEST(Deinterleave4Test, Deinterleave)
     z.store(out_buffer3);
 
     // x expected = 0,3,6,9
-    ASSERT_FLOAT_EQ(out_buffer1[0], 0);
-    ASSERT_FLOAT_EQ(out_buffer1[1], 3);
-    ASSERT_FLOAT_EQ(out_buffer1[2], 6);
-    ASSERT_FLOAT_EQ(out_buffer1[3], 9);
+    EXPECT_SCALAR_EQ(out_buffer1[0], 0);
+    EXPECT_SCALAR_EQ(out_buffer1[1], 3);
+    EXPECT_SCALAR_EQ(out_buffer1[2], 6);
+    EXPECT_SCALAR_EQ(out_buffer1[3], 9);
 
     // y expected = 1,4,7,10
-    ASSERT_FLOAT_EQ(out_buffer2[0], 1);
-    ASSERT_FLOAT_EQ(out_buffer2[1], 4);
-    ASSERT_FLOAT_EQ(out_buffer2[2], 7);
-    ASSERT_FLOAT_EQ(out_buffer2[3], 10);
+    EXPECT_SCALAR_EQ(out_buffer2[0], 1);
+    EXPECT_SCALAR_EQ(out_buffer2[1], 4);
+    EXPECT_SCALAR_EQ(out_buffer2[2], 7);
+    EXPECT_SCALAR_EQ(out_buffer2[3], 10);
 
     // z expected = 2,5,8,11
-    ASSERT_FLOAT_EQ(out_buffer3[0], 2);
-    ASSERT_FLOAT_EQ(out_buffer3[1], 5);
-    ASSERT_FLOAT_EQ(out_buffer3[2], 8);
-    ASSERT_FLOAT_EQ(out_buffer3[3], 11);
+    EXPECT_SCALAR_EQ(out_buffer3[0], 2);
+    EXPECT_SCALAR_EQ(out_buffer3[1], 5);
+    EXPECT_SCALAR_EQ(out_buffer3[2], 8);
+    EXPECT_SCALAR_EQ(out_buffer3[3], 11);
 }
 
 template <typename T>
@@ -203,34 +204,34 @@ TYPED_TEST(Deinterleave8Test, Deinterleave)
     z.store(out_buffer3);
 
     // x expected = 0,3,6,9,12,15,18,21
-    ASSERT_FLOAT_EQ(out_buffer1[0], 0);
-    ASSERT_FLOAT_EQ(out_buffer1[1], 3);
-    ASSERT_FLOAT_EQ(out_buffer1[2], 6);
-    ASSERT_FLOAT_EQ(out_buffer1[3], 9);
-    ASSERT_FLOAT_EQ(out_buffer1[4], 12);
-    ASSERT_FLOAT_EQ(out_buffer1[5], 15);
-    ASSERT_FLOAT_EQ(out_buffer1[6], 18);
-    ASSERT_FLOAT_EQ(out_buffer1[7], 21);
+    EXPECT_SCALAR_EQ(out_buffer1[0], 0);
+    EXPECT_SCALAR_EQ(out_buffer1[1], 3);
+    EXPECT_SCALAR_EQ(out_buffer1[2], 6);
+    EXPECT_SCALAR_EQ(out_buffer1[3], 9);
+    EXPECT_SCALAR_EQ(out_buffer1[4], 12);
+    EXPECT_SCALAR_EQ(out_buffer1[5], 15);
+    EXPECT_SCALAR_EQ(out_buffer1[6], 18);
+    EXPECT_SCALAR_EQ(out_buffer1[7], 21);
 
     // y expected = 1,4,7,10,13,16,19,22
-    ASSERT_FLOAT_EQ(out_buffer2[0], 1);
-    ASSERT_FLOAT_EQ(out_buffer2[1], 4);
-    ASSERT_FLOAT_EQ(out_buffer2[2], 7);
-    ASSERT_FLOAT_EQ(out_buffer2[3], 10);
-    ASSERT_FLOAT_EQ(out_buffer2[4], 13);
-    ASSERT_FLOAT_EQ(out_buffer2[5], 16);
-    ASSERT_FLOAT_EQ(out_buffer2[6], 19);
-    ASSERT_FLOAT_EQ(out_buffer2[7], 22);
+    EXPECT_SCALAR_EQ(out_buffer2[0], 1);
+    EXPECT_SCALAR_EQ(out_buffer2[1], 4);
+    EXPECT_SCALAR_EQ(out_buffer2[2], 7);
+    EXPECT_SCALAR_EQ(out_buffer2[3], 10);
+    EXPECT_SCALAR_EQ(out_buffer2[4], 13);
+    EXPECT_SCALAR_EQ(out_buffer2[5], 16);
+    EXPECT_SCALAR_EQ(out_buffer2[6], 19);
+    EXPECT_SCALAR_EQ(out_buffer2[7], 22);
 
     // y expected = 2,5,8,11,14,17,20,23
-    ASSERT_FLOAT_EQ(out_buffer3[0], 2);
-    ASSERT_FLOAT_EQ(out_buffer3[1], 5);
-    ASSERT_FLOAT_EQ(out_buffer3[2], 8);
-    ASSERT_FLOAT_EQ(out_buffer3[3], 11);
-    ASSERT_FLOAT_EQ(out_buffer3[4], 14);
-    ASSERT_FLOAT_EQ(out_buffer3[5], 17);
-    ASSERT_FLOAT_EQ(out_buffer3[6], 20);
-    ASSERT_FLOAT_EQ(out_buffer3[7], 23);
+    EXPECT_SCALAR_EQ(out_buffer3[0], 2);
+    EXPECT_SCALAR_EQ(out_buffer3[1], 5);
+    EXPECT_SCALAR_EQ(out_buffer3[2], 8);
+    EXPECT_SCALAR_EQ(out_buffer3[3], 11);
+    EXPECT_SCALAR_EQ(out_buffer3[4], 14);
+    EXPECT_SCALAR_EQ(out_buffer3[5], 17);
+    EXPECT_SCALAR_EQ(out_buffer3[6], 20);
+    EXPECT_SCALAR_EQ(out_buffer3[7], 23);
 }
 
 // only Vec16f has width = 16 so no need for typed test
@@ -269,9 +270,9 @@ TEST(Deinterleave16Test, Deinterleave)
 
     for (int i = 0; i < 16; i++)
     {
-        ASSERT_FLOAT_EQ(out_buffer1[i], static_cast<float>(3 * i));
-        ASSERT_FLOAT_EQ(out_buffer2[i], static_cast<float>(3 * i + 1));
-        ASSERT_FLOAT_EQ(out_buffer3[i], static_cast<float>(3 * i + 2));
+        EXPECT_SCALAR_EQ(out_buffer1[i], static_cast<float>(3 * i));
+        EXPECT_SCALAR_EQ(out_buffer2[i], static_cast<float>(3 * i + 1));
+        EXPECT_SCALAR_EQ(out_buffer3[i], static_cast<float>(3 * i + 2));
     }
 }
 
@@ -305,7 +306,7 @@ TYPED_TEST(DistancesTest, NoBoxKnownValues0)
 
     for (int i = 0; i < N; i++)
     {
-        ASSERT_FLOAT_EQ(out[i], result);
+        EXPECT_SCALAR_EQ(out[i], result);
     }
 }
 
