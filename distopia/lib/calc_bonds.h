@@ -48,25 +48,25 @@ template <>
 void CalcBondsOrtho(const float *coords0, const float *coords1,
                     const float *box, std::size_t n, float *out)
 {
-    CalcBondsInner<Vec8f, OrthogonalBox<Vec8f>>(coords0, coords1, box, n, out);
+    CalcBondsInner<MaxVectorT<float>, OrthogonalBox<MaxVectorT<float>>>(coords0, coords1, box, n, out);
 }
 template <>
 void CalcBondsOrtho(const double *coords0, const double *coords1,
                     const double *box, std::size_t n, double *out)
 {
-    CalcBondsInner<Vec4d, OrthogonalBox<Vec4d>>(coords0, coords1, box, n, out);
+    CalcBondsInner<MaxVectorT<double>, OrthogonalBox<MaxVectorT<double>>>(coords0, coords1, box, n, out);
 }
 
 template <>
 void CalcBondsNoBox(const float *coords0, const float *coords1, std::size_t n, float *out)
 {
-    CalcBondsInner<Vec8f, NoBox<Vec8f>>(coords0, coords1, nullptr, n, out);
+    CalcBondsInner<MaxVectorT<float>, NoBox<MaxVectorT<float>>>(coords0, coords1, nullptr, n, out);
 }
 
 template <>
 void CalcBondsNoBox(const double *coords0, const double *coords1, std::size_t n, double *out)
 {
-    CalcBondsInner<Vec4d, NoBox<Vec4d>>(coords0, coords1, nullptr,  n, out);
+    CalcBondsInner<MaxVectorT<double>, NoBox<MaxVectorT<double>>>(coords0, coords1, nullptr,  n, out);
 }
 
 #endif // DISTOPIA_CALC_BONDS_H
