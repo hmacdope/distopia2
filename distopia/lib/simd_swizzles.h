@@ -182,10 +182,12 @@ inline VectorT last_to_first4(VectorT inp)
 
 
 
-// as the deinterleaves were generic we need overloads for each option
+// as the deinterleaves were generic we need overloads for each option.
+// NOTE: always load using a vector of width 4 and then combine
 
-// special case for vec2d as it can't fit 3 coordinates, we instead load using
-// a Vec4d
+// extra special case for vec2d as it can't fit 3 coordinates, we instead load
+// using a Vec4d. This is not technically a violation of SIMD compatibility
+// (__m128d is SSE and __m256d is AVX) as VCL2 can use 2x Vec2d to form a Vec4d.
 inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec2d &x, Vec2d &y, Vec2d &z)
 {
     // blah
@@ -201,7 +203,7 @@ inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec4d &x, Vec4d &y, Vec4d &z)
     // blah
 }
 
-inline void DeinterleaveIdx(const Vec8f *vec_arr, Vec8f &x, Vec8f &y, Vec8f &z)
+inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec8f &x, Vec8f &y, Vec8f &z)
 {
     // blah
 }
@@ -211,7 +213,7 @@ inline void DeinterleaveIdx(const Vec8d *vec_arr, Vec8d &x, Vec8d &y, Vec8d &z)
     // blah
 }
 
-inline void DeinterleaveIdx(const Vec16f *vec_arr, Vec16f &x, Vec16f &y, Vec16f &z)
+inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec16f &x, Vec16f &y, Vec16f &z)
 {
     // blah
 }
