@@ -212,7 +212,7 @@ inline void Deinterleave4x3(const VectorT a, const VectorT b, const VectorT c, c
 
 inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec2d &x, Vec2d &y, Vec2d &z)
 {
-    // blah
+    // Deinterleave 2x3
 }
 
 inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec4f &x, Vec4f &y, Vec4f &z)
@@ -222,22 +222,22 @@ inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec4f &x, Vec4f &y, Vec4f &z)
 
 inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec4d &x, Vec4d &y, Vec4d &z)
 {
-    // blah
+    Deinterleave4x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], x, y, z);
 }
 
 inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec8f &x, Vec8f &y, Vec8f &z)
 {
-    // blah
+    // Deinterleave 8x3 
 }
 
 inline void DeinterleaveIdx(const Vec8d *vec_arr, Vec8d &x, Vec8d &y, Vec8d &z)
 {
-    Deinterleave4x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], x, y, z);
+    // Deinterleave 8x3
 }
 
 inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec16f &x, Vec16f &y, Vec16f &z)
 {
-    // blah
+    // Deinterleave16x3
 }
 
 #endif // DISTOPIA_SIMD_SWIZZLE_H
