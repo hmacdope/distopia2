@@ -3,6 +3,7 @@
 
 #include "distopia_type_traits.h"
 #include "vectorclass.h"
+#include "compiler_hints.h"
 
 template <typename VectorT>
 inline void Deinterleave2(const VectorT a, const VectorT b, const VectorT c,
@@ -142,6 +143,35 @@ inline void Deinterleave(Vec8d a, Vec8d b, Vec8d c, Vec8d &x, Vec8d &y, Vec8d &z
 inline void Deinterleave(Vec16f a, Vec16f b, Vec16f c, Vec16f &x, Vec16f &y, Vec16f &z)
 {
     Deinterleave16(a, b, c, x, y, z);
+}
+
+template <typename VectorT>
+inline VectorT IdxLoad4(const VectorToScalarT<VectorT> *source, const std::size_t idx)
+{
+    static_assert(ValuesPerPack<VectorT> == 4, "can only use to load into SIMD register of width 4");
+    
+    // load 4 values into register register using and index
+    VectorT value;
+    if (distopia_unlikely(idx == 0))
+    {
+        // load as xyzX
+        value.load(&source[idx]);
+        // shuffle it to Xxyz
+        return last_to_first4(value);
+    }
+
+    else
+    {
+        // load offset by one for Xxyz
+        value.load(&source[idx - 1]);
+        return value;
+    }
+}
+
+template <typename VectorT>
+inline VectorT last_to_first4(VectorT inp)
+{
+    return permute4<3, 0, 1, 2>(inp);
 }
 
 #endif // DISTOPIA_SIMD_SWIZZLE_H

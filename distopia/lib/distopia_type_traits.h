@@ -111,6 +111,47 @@ struct MaxVectorTStruct<double>
 #endif
 };
 
+
+template <typename VectorT>
+struct VectorToIdxLoadTStruct;
+
+template <>
+struct VectorToIdxLoadTStruct<Vec16f>
+{
+    using type = Vec4f;
+};
+
+template <>
+struct VectorToIdxLoadTStruct<Vec8f>
+{
+    using type = Vec4f;
+};
+
+template <>
+struct VectorToIdxLoadTStruct<Vec4f>
+{
+    using type = Vec4f;
+};
+
+template <>
+struct VectorToIdxLoadTStruct<Vec8d>
+{
+    using type = Vec4d;
+};
+
+template <>
+struct VectorToIdxLoadTStruct<Vec4d>
+{
+    using type = Vec4d;
+};
+
+template <>
+struct VectorToIdxLoadTStruct<Vec2d>
+{
+    using type = Vec4d;
+};
+
+
 template <typename VectorT>
 using VectorToScalarT = typename VectorToScalarTStruct<VectorT>::type;
 
@@ -119,6 +160,9 @@ using HalfVectorT = typename HalfVectorTStruct<VectorT>::type;
 
 template <typename ScalarT>
 using MaxVectorT = typename MaxVectorTStruct<ScalarT>::type;
+
+template <typename VectorT>
+using VectorToIdxLoadT = typename VectorToIdxLoadTStruct<VectorT>::type;
 
 template <typename T>
 constexpr std::size_t ValuesPerPack = sizeof(T) / sizeof(VectorToScalarT<T>);

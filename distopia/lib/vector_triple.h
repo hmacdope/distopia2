@@ -5,13 +5,16 @@
 #include "simd_swizzles.h"
 #include "vectorclass.h"
 
-
 template <typename VectorT>
 class VectorTriple
 {
 
 public:
+    // float or double
     using ScalarT = VectorToScalarT<VectorT>;
+    // when loading by index we only ever load with width 4 for x,y,z,?
+    using IdxLoadT = VectorToIdxLoadT<VectorT>;
+
     // SIMD type that contains x coordinates
     VectorT x;
     // SIMD type that contains y coordinates
@@ -46,12 +49,23 @@ public:
         Deinterleave(t1, t2, t3, x, y, z);
     }
 
+    template <unsigned char stride>
+    void idxload_and_deinterleave(const ScalarT *source, const std::size_t *idxs)
+    {
+        IdxLoadT v_arr[ValuesPerPack<VectorT>];
+        for (std::size_t i = 0; i < size; i++)
+        {
+            //v_arr[i] = IdxLoad4<IdxLoadT>(source, 3 * idxs[i * stride]);
+        }
+        // DeinterleaveIdx(v_arr, x, y, z);
+    }
+
     void debug_print(const char *nm)
     {
-        ScalarT debug[ValuesPerPack<VectorT> * 3];
+        ScalarT debug[size * 3];
         this->store(debug);
         std::cerr << nm << " ";
-        for (unsigned char i = 0; i < ValuesPerPack<VectorT> * 3; ++i)
+        for (unsigned char i = 0; i < size * 3; ++i)
             std::cerr << debug[i] << " ";
         std::cerr << "\n";
     }
