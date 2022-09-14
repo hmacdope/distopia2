@@ -5,6 +5,8 @@
 #include "vectorclass.h"
 #include "compiler_hints.h"
 
+// contiguous AOS->SOA deinterleaves
+
 template <typename VectorT>
 inline void Deinterleave2(const VectorT a, const VectorT b, const VectorT c,
                           VectorT &x, VectorT &y, VectorT &z)
@@ -145,11 +147,13 @@ inline void Deinterleave(Vec16f a, Vec16f b, Vec16f c, Vec16f &x, Vec16f &y, Vec
     Deinterleave16(a, b, c, x, y, z);
 }
 
+// IDX based loaders and AOS->SOA deinterleaves
+
 template <typename VectorT>
 inline VectorT IdxLoad4(const VectorToScalarT<VectorT> *source, const std::size_t idx)
 {
     static_assert(ValuesPerPack<VectorT> == 4, "can only use to load into SIMD register of width 4");
-    
+
     // load 4 values into register register using and index
     VectorT value;
     if (distopia_unlikely(idx == 0))
@@ -172,6 +176,44 @@ template <typename VectorT>
 inline VectorT last_to_first4(VectorT inp)
 {
     return permute4<3, 0, 1, 2>(inp);
+}
+
+
+
+
+
+// as the deinterleaves were generic we need overloads for each option
+
+// special case for vec2d as it can't fit 3 coordinates, we instead load using
+// a Vec4d
+inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec2d &x, Vec2d &y, Vec2d &z)
+{
+    // blah
+}
+
+inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec4f &x, Vec4f &y, Vec4f &z)
+{
+    // blah
+}
+
+inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec4d &x, Vec4d &y, Vec4d &z)
+{
+    // blah
+}
+
+inline void DeinterleaveIdx(const Vec8f *vec_arr, Vec8f &x, Vec8f &y, Vec8f &z)
+{
+    // blah
+}
+
+inline void DeinterleaveIdx(const Vec8d *vec_arr, Vec8d &x, Vec8d &y, Vec8d &z)
+{
+    // blah
+}
+
+inline void DeinterleaveIdx(const Vec16f *vec_arr, Vec16f &x, Vec16f &y, Vec16f &z)
+{
+    // blah
 }
 
 #endif // DISTOPIA_SIMD_SWIZZLE_H

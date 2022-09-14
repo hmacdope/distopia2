@@ -55,9 +55,9 @@ public:
         IdxLoadT v_arr[ValuesPerPack<VectorT>];
         for (std::size_t i = 0; i < size; i++)
         {
-            //v_arr[i] = IdxLoad4<IdxLoadT>(source, 3 * idxs[i * stride]);
+            v_arr[i] = IdxLoad4<IdxLoadT>(source, 3 * idxs[i * stride]);
         }
-        // DeinterleaveIdx(v_arr, x, y, z);
+        DeinterleaveIdx(v_arr, x, y, z);
     }
 
     void debug_print(const char *nm)
