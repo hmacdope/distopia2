@@ -179,15 +179,37 @@ inline VectorT last_to_first4(VectorT inp)
 }
 
 
+// 4 -> 3 mapping getting rid of 4x junk values
+template <typename VectorT>
+inline void Deinterleave4x3(const VectorT a, const VectorT b, const VectorT c, const VectorT d,
+                VectorT &x, VectorT &y, VectorT &z)
+{
+    // U = undefined, X = junk
+    // PRE: a  = Xx0y0z0 b = Xx1y1z1 c = Xx2y2z2 d = Xx3y3z3
+    // NOTE: V_DC means "dont care about the value" see VCL2 manual
 
+    VectorT tmp0 = blend4<1, 5, 2, 6>(a, b);
+    // tmp0 = x0x1y0y1
+    VectorT tmp1 = blend4<2, 6, 1, 5>(c, d);
+    // tmp1 = y2y3x2x3
 
+    VectorT tmp2 = blend4<3, 7, V_DC, V_DC>(a, b);
+    // tmp2 = z0z1UU
+
+    VectorT tmp3 = blend4<V_DC, V_DC, 3, 7>(c, d);
+    // tmp2 = UUz2z3
+    x = blend4<0, 1, 6, 7>(tmp0, tmp1);
+    y = blend4<6, 7, 0, 1>(tmp0, tmp1);
+    z = blend4<0, 1, 6, 7>(tmp2, tmp3);
+}
 
 // as the deinterleaves were generic we need overloads for each option.
-// NOTE: always load using a vector of width 4 and then combine
+// NOTE: always load using a vector of width 4 and then combine.
 
 // extra special case for vec2d as it can't fit 3 coordinates, we instead load
 // using a Vec4d. This is not technically a violation of SIMD compatibility
 // (__m128d is SSE and __m256d is AVX) as VCL2 can use 2x Vec2d to form a Vec4d.
+
 inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec2d &x, Vec2d &y, Vec2d &z)
 {
     // blah
@@ -195,7 +217,7 @@ inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec2d &x, Vec2d &y, Vec2d &z)
 
 inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec4f &x, Vec4f &y, Vec4f &z)
 {
-    // blah
+    Deinterleave4x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], x, y, z);
 }
 
 inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec4d &x, Vec4d &y, Vec4d &z)
@@ -210,7 +232,7 @@ inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec8f &x, Vec8f &y, Vec8f &z)
 
 inline void DeinterleaveIdx(const Vec8d *vec_arr, Vec8d &x, Vec8d &y, Vec8d &z)
 {
-    // blah
+    Deinterleave4x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], x, y, z);
 }
 
 inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec16f &x, Vec16f &y, Vec16f &z)
