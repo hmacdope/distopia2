@@ -12,8 +12,8 @@ namespace
   template <typename VectorT>
   inline VectorT remainder(VectorT x, VectorT y)
   {
-    // FIXME possible rounding error, replace with extended precision version
-    // at some point, see VCL2 source code for more info
+    // FIXME: possible rounding error, replace with extended precision version
+    // at some point, see VCL2 source code for more info (function fremainder)
     VectorT wraps_around = round(x / y);
     return nmul_add(wraps_around, y, x);
   }
@@ -23,12 +23,14 @@ namespace
   {
     VectorT d = abs(x0 - x1);
     VectorT y_sub_d = y - d;
-    bool sb_all_0 = horizontal_or(sign_bit(y_sub_d));
-
+    // check that the sign bits are all 0 ?
+    bool sb_all_0 = !horizontal_or(sign_bit(y_sub_d));
     if (distopia_likely(sb_all_0))
     {
+      // all inside the box
       return min(d, y_sub_d);
     }
+    // take remainder with box
     x0 = remainder(x0, y);
     x1 = remainder(x1, y);
     d = abs(x0 - x1);
