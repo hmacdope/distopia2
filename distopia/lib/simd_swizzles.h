@@ -230,7 +230,7 @@ inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec8f &x, Vec8f &y, Vec8f &z)
     // Deinterleave 8x3 
 }
 
-inline void DeinterleaveIdx(const Vec8d *vec_arr, Vec8d &x, Vec8d &y, Vec8d &z)
+inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec8d &x, Vec8d &y, Vec8d &z)
 {
     // Deinterleave 8x3
 }
