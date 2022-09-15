@@ -215,9 +215,9 @@ inline void Deinterleave8x3(const VectorToIdxLoadT<VectorT> a, const VectorToIdx
     // tx0 = x0x1x2x3 ty0 = y0y1y2y3 tz0 = z0z1z2z3
     Deinterleave4x3(e, f, g, h, tx1, ty1, tz1);
     // tx1 = x4x5x6x7 ty1 = y4y5y6y7 tz1 = z4z5z6z7
-    x = combine2(tx0, tx1);
-    y = combine2(ty0, ty1);
-    z = combine2(tz0, tz1);
+    x = concatenate2(tx0, tx1);
+    y = concatenate2(ty0, ty1);
+    z = concatenate2(tz0, tz1);
 }
 
 // 16x4 -> 3x16 mapping getting rid of 16 junk values
@@ -235,9 +235,9 @@ inline void Deinterleave16x3(const VectorToIdxLoadT<VectorT> a, const VectorToId
     Deinterleave4x3(e, f, g, h, tx1, ty1, tz1);
     Deinterleave4x3(i, j, k, l, tx2, ty2, tz2);
     Deinterleave4x3(m, n, o, p, tx3, ty3, tz3);
-    x = combine4(tx0, tx1, tx2, tx3);
-    y = combine4(ty0, ty1, ty2, ty3);
-    z = combine4(tz0, tz1, tz2, tz3);
+    x = concatenate2(concatenate2(tx0, tx1), concatenate2(tx2, tx3));
+    y = concatenate2(concatenate2(ty0, ty1), concatenate2(ty2, ty3));
+    z = concatenate2(concatenate2(tz0, tz1), concatenate2(tz2, tz3));
 }
 
 // as the deinterleaves were generic we need overloads for each option.
