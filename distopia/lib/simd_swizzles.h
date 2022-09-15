@@ -220,7 +220,7 @@ inline void Deinterleave8x3(const VectorToIdxLoadT<VectorT> a, const VectorToIdx
     z = combine2(tz0, tz1);
 }
 
-// 8x4 -> 3x8 mapping getting rid of 8 junk values
+// 16x4 -> 3x16 mapping getting rid of 16 junk values
 template <typename VectorT>
 inline void Deinterleave16x3(const VectorToIdxLoadT<VectorT> a, const VectorToIdxLoadT<VectorT> b, const VectorToIdxLoadT<VectorT> c, const VectorToIdxLoadT<VectorT> d,
                              const VectorToIdxLoadT<VectorT> e, VectorToIdxLoadT<VectorT> f, const VectorToIdxLoadT<VectorT> g, const VectorToIdxLoadT<VectorT> h,
@@ -264,17 +264,19 @@ inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec4d &x, Vec4d &y, Vec4d &z)
 
 inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec8f &x, Vec8f &y, Vec8f &z)
 {
-    // Deinterleave 8x3
+    Deinterleave8x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], vec_arr[4], vec_arr[5], vec_arr[6], vec_arr[7], x, y, z);
 }
 
 inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec8d &x, Vec8d &y, Vec8d &z)
 {
-    // Deinterleave 8x3
+    Deinterleave8x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], vec_arr[4], vec_arr[5], vec_arr[6], vec_arr[7], x, y, z);
 }
 
 inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec16f &x, Vec16f &y, Vec16f &z)
 {
-    // Deinterleave16x3
+    Deinterleave16x3(vec_arr[0], vec_arr[1], vec_arr[2], vec_arr[3], vec_arr[4], vec_arr[5], vec_arr[6], vec_arr[7],
+                     vec_arr[8], vec_arr[9], vec_arr[10], vec_arr[11], vec_arr[12], vec_arr[13], vec_arr[14], vec_arr[15],
+                     x, y, z);
 }
 
 #endif // DISTOPIA_SIMD_SWIZZLE_H
