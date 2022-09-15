@@ -178,11 +178,10 @@ inline VectorT last_to_first4(VectorT inp)
     return permute4<3, 0, 1, 2>(inp);
 }
 
-
-// 4 -> 3 mapping getting rid of 4x junk values
+// 4x4 -> 3x4 mapping getting rid of 4x junk values
 template <typename VectorT>
 inline void Deinterleave4x3(const VectorT a, const VectorT b, const VectorT c, const VectorT d,
-                VectorT &x, VectorT &y, VectorT &z)
+                            VectorT &x, VectorT &y, VectorT &z)
 {
     // U = undefined, X = junk
     // PRE: a  = Xx0y0z0 b = Xx1y1z1 c = Xx2y2z2 d = Xx3y3z3
@@ -201,6 +200,44 @@ inline void Deinterleave4x3(const VectorT a, const VectorT b, const VectorT c, c
     x = blend4<0, 1, 6, 7>(tmp0, tmp1);
     y = blend4<6, 7, 0, 1>(tmp0, tmp1);
     z = blend4<0, 1, 6, 7>(tmp2, tmp3);
+}
+
+// 8x4 -> 3x8 mapping getting rid of 8 junk values
+template <typename VectorT>
+inline void Deinterleave8x3(const VectorToIdxLoadT<VectorT> a, const VectorToIdxLoadT<VectorT> b, const VectorToIdxLoadT<VectorT> c, const VectorToIdxLoadT<VectorT> d,
+                            const VectorToIdxLoadT<VectorT> e, VectorToIdxLoadT<VectorT> f, const VectorToIdxLoadT<VectorT> g, const VectorToIdxLoadT<VectorT> h, VectorT &x, VectorT &y, VectorT &z)
+{
+    // U = undefined, X = junk
+    // PRE: a  = Xx0y0z0 b = Xx1y1z1 c = Xx2y2z2 d = Xx3y3z3 e  = Xx4y4z4 f =
+    // Xx5y5z5 g = Xx6y6z6 h = Xx7y7z7
+    VectorToIdxLoadT<VectorT> tx0, ty0, tz0, tx1, ty1, tz1;
+    Deinterleave4x3(a, b, c, d, tx0, ty0, tz0);
+    // tx0 = x0x1x2x3 ty0 = y0y1y2y3 tz0 = z0z1z2z3
+    Deinterleave4x3(e, f, g, h, tx1, ty1, tz1);
+    // tx1 = x4x5x6x7 ty1 = y4y5y6y7 tz1 = z4z5z6z7
+    x = combine2(tx0, tx1);
+    y = combine2(ty0, ty1);
+    z = combine2(tz0, tz1);
+}
+
+// 8x4 -> 3x8 mapping getting rid of 8 junk values
+template <typename VectorT>
+inline void Deinterleave16x3(const VectorToIdxLoadT<VectorT> a, const VectorToIdxLoadT<VectorT> b, const VectorToIdxLoadT<VectorT> c, const VectorToIdxLoadT<VectorT> d,
+                             const VectorToIdxLoadT<VectorT> e, VectorToIdxLoadT<VectorT> f, const VectorToIdxLoadT<VectorT> g, const VectorToIdxLoadT<VectorT> h,
+                             const VectorToIdxLoadT<VectorT> i, const VectorToIdxLoadT<VectorT> j, const VectorToIdxLoadT<VectorT> k, const VectorToIdxLoadT<VectorT> l,
+                             const VectorToIdxLoadT<VectorT> m, VectorToIdxLoadT<VectorT> n, const VectorToIdxLoadT<VectorT> o, const VectorToIdxLoadT<VectorT> p,
+                             VectorT &x, VectorT &y, VectorT &z)
+{
+    // same idea as above
+    VectorToIdxLoadT<VectorT> tx0, ty0, tz0, tx1, ty1, tz1;
+    VectorToIdxLoadT<VectorT> tx2, ty2, tz2, tx3, ty3, tz3;
+    Deinterleave4x3(a, b, c, d, tx0, ty0, tz0);
+    Deinterleave4x3(e, f, g, h, tx1, ty1, tz1);
+    Deinterleave4x3(i, j, k, l, tx2, ty2, tz2);
+    Deinterleave4x3(m, n, o, p, tx3, ty3, tz3);
+    x = combine4(tx0, tx1, tx2, tx3);
+    y = combine4(ty0, ty1, ty2, ty3);
+    z = combine4(tz0, tz1, tz2, tz3);
 }
 
 // as the deinterleaves were generic we need overloads for each option.
@@ -227,7 +264,7 @@ inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec4d &x, Vec4d &y, Vec4d &z)
 
 inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec8f &x, Vec8f &y, Vec8f &z)
 {
-    // Deinterleave 8x3 
+    // Deinterleave 8x3
 }
 
 inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec8d &x, Vec8d &y, Vec8d &z)
