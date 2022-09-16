@@ -277,6 +277,55 @@ TEST(Deinterleave16Test, Deinterleave)
     }
 }
 
+// only Vec16f has width = 16 so no need for typed test
+// more programmatic version of the above test because typing all the indices is
+// tiring
+TEST(Deinterleave16x3Test, Deinterleave)
+{
+
+    float in_buffer[60];
+
+    std::iota(std::begin(in_buffer), std::end(in_buffer), 0);
+
+    Vec4f a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p;
+    Vec16f x, y, z;
+
+    a.load(in_buffer);
+    b.load(in_buffer + 4);
+    c.load(in_buffer + 8);
+    d.load(in_buffer + 12);
+    e.load(in_buffer + 16);
+    f.load(in_buffer + 20);
+    g.load(in_buffer + 24);
+    h.load(in_buffer + 28);
+    i.load(in_buffer + 32);
+    j.load(in_buffer + 36);
+    k.load(in_buffer + 40);
+    l.load(in_buffer + 44);
+    m.load(in_buffer + 48);
+    n.load(in_buffer + 52);
+    o.load(in_buffer + 56);
+    p.load(in_buffer + 60);
+
+    float out_buffer1[16];
+    float out_buffer2[16];
+    float out_buffer3[16];
+
+    Deinterleave16x3(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, x, y, z);
+
+    x.store(out_buffer1);
+    y.store(out_buffer2);
+    z.store(out_buffer3);
+
+    for (int i = 0; i < 16; i++)
+    {
+        printf(" %f %f %f \n", out_buffer1[i], out_buffer2[i], out_buffer3[i]);
+        // EXPECT_SCALAR_EQ(out_buffer1[i], 3 * i);
+        // EXPECT_SCALAR_EQ(out_buffer2[i], 3 * i + 1);
+        // EXPECT_SCALAR_EQ(out_buffer3[i], 3 * i + 2);
+    }
+}
+
 template <typename T>
 class DistancesTest : public ::testing::Test
 {
