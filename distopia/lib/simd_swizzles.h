@@ -178,9 +178,27 @@ inline VectorT last_to_first4(VectorT inp)
     return permute4<3, 0, 1, 2>(inp);
 }
 
-// 4x4 -> 3x4 mapping getting rid of 4x junk values
+// special case as Vec2d cannot hold 4 indices so we load with Vec4d instead
+// 4x3 -> 3x2 mapping getting rid of 4x junk values and 2 useful ones
 template <typename VectorT>
-inline void Deinterleave4x3(const VectorT a, const VectorT b, const VectorT c, const VectorT d,
+inline void Deinterleave2x3(const VectorToIdxLoadT<VectorT> a, const VectorToIdxLoadT<VectorT> b,
+                            VectorT &x, VectorT &y, VectorT &z)
+{
+    // U = undefined, X = junk
+    // PRE: a  = Xx0y0z0 b = Xx1y1z1 
+    // NOTE: V_DC means "dont care about the value" see VCL2 manual
+    VectorToIdxLoadT<VectorT> tmp = blend4<1, 5, 2, 6>(a, b);
+    // tmp = x0x1y0y1;
+    x = tmp.get_low();
+    y = tmp.get_high();
+    z = blend4<3,7, V_DC, V_DC>(a,b).get_low();
+}
+
+// 4x4 -> 3x4 mapping getting rid of 4x junk values
+// strictly no need to use VectorToIdxLoadT<VectorT> here as the loader
+// for width 4 types is always VectorT but done for consistency
+template <typename VectorT>
+inline void Deinterleave4x3(const VectorToIdxLoadT<VectorT> a, const VectorToIdxLoadT<VectorT> b, const VectorToIdxLoadT<VectorT> c, const VectorToIdxLoadT<VectorT> d,
                             VectorT &x, VectorT &y, VectorT &z)
 {
     // U = undefined, X = junk
@@ -249,7 +267,7 @@ inline void Deinterleave16x3(const VectorToIdxLoadT<VectorT> a, const VectorToId
 
 inline void DeinterleaveIdx(const Vec4d *vec_arr, Vec2d &x, Vec2d &y, Vec2d &z)
 {
-    // Deinterleave 2x3
+    Deinterleave2x3(vec_arr[0], vec_arr[1], x,y,z);
 }
 
 inline void DeinterleaveIdx(const Vec4f *vec_arr, Vec4f &x, Vec4f &y, Vec4f &z)
