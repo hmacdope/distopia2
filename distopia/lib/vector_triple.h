@@ -32,7 +32,6 @@ public:
 
     void load(const ScalarT *source)
     {
-        VectorT t1, t2, t3;
         x.load(source);
         y.load(source + size);
         z.load(source + 2 * size);
