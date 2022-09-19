@@ -216,7 +216,7 @@ inline void Deinterleave4x3(const VectorToIdxLoadT<VectorT> a, const VectorToIdx
     VectorT tmp3 = blend4<V_DC, V_DC, 3, 7>(c, d);
     // tmp2 = UUz2z3
     x = blend4<0, 1, 6, 7>(tmp0, tmp1);
-    y = blend4<6, 7, 0, 1>(tmp0, tmp1);
+    y = blend4<2, 3, 4, 5>(tmp0, tmp1);
     z = blend4<0, 1, 6, 7>(tmp2, tmp3);
 }
 

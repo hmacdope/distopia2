@@ -49,7 +49,7 @@ public:
         Deinterleave(t1, t2, t3, x, y, z);
     }
 
-    template <unsigned char stride>
+    template <int stride>
     void idxload_and_deinterleave(const ScalarT *source, const std::size_t *idxs)
     {
         IdxLoadT v_arr[ValuesPerPack<VectorT>];

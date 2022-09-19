@@ -277,63 +277,41 @@ TEST(Deinterleave16Test, Deinterleave)
     }
 }
 
-// only Vec2d has width = 2 so no need for typed test
-TEST(VectorTripleDeinterleave2x3Test, Deinterleave)
+
+template <typename  T >
+class VectorTripleIdxLoadTest : public ::testing::Test
+{
+public:
+    // blank, we do all the stuff in each test
+};
+
+TYPED_TEST_SUITE(VectorTripleIdxLoadTest, Implementations);
+
+TYPED_TEST(VectorTripleIdxLoadTest, DeinterleaveAllIdx)
 {
 
-    double in_buffer[9];
+    VectorToScalarT<TypeParam> in_buffer[3* ValuesPerPack<TypeParam>];
 
     std::iota(std::begin(in_buffer), std::end(in_buffer), 0);
 
-    auto vt = VectorTriple<Vec2d>();
+    VectorTriple<TypeParam> vt = VectorTriple<TypeParam>();
 
-    std::size_t idx[2]; // {1, 2}
-    std::iota(std::begin(idx), std::end(idx), 1);
-
-    vt.idxload_and_deinterleave<1>(in_buffer, idx);
-
-    double out_buffer1[2];
-    double out_buffer2[2];
-    double out_buffer3[2];
-
-    vt.x.store(out_buffer1);
-    vt.y.store(out_buffer2);
-    vt.z.store(out_buffer3);
-
-    for (int i = 0; i < 2; i++) // +1 as we use indexes {1,2}
-    {
-        EXPECT_SCALAR_EQ(out_buffer1[i], 3 * (i + 1));
-        EXPECT_SCALAR_EQ(out_buffer2[i], 3 * (i + 1) + 1);
-        EXPECT_SCALAR_EQ(out_buffer3[i], 3 * (i + 1) + 2);
-    }
-}
-
-// only Vec16f has width = 16 so no need for typed test
-TEST(VectorTripleDeinterleave16x3Test, Deinterleave)
-{
-
-    float in_buffer[60];
-
-    std::iota(std::begin(in_buffer), std::end(in_buffer), 0);
-
-    auto vt = VectorTriple<Vec16f>();
-
-    std::size_t idx[16];
+    std::size_t idx[ValuesPerPack<TypeParam>];
     std::iota(std::begin(idx), std::end(idx), 0);
 
-    vt.idxload_and_deinterleave<1>(in_buffer, idx);
+    // need template here to resolve the type
+    vt.template idxload_and_deinterleave<1> (in_buffer, idx);
 
-    float out_buffer1[16];
-    float out_buffer2[16];
-    float out_buffer3[16];
+    VectorToScalarT<TypeParam> out_buffer1[ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer2[ValuesPerPack<TypeParam>];
+    VectorToScalarT<TypeParam> out_buffer3[ValuesPerPack<TypeParam>];
 
     vt.x.store(out_buffer1);
     vt.y.store(out_buffer2);
     vt.z.store(out_buffer3);
 
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < ValuesPerPack<TypeParam>; i++)
     {
-        printf(" %f %f %f \n", out_buffer1[i], out_buffer2[i], out_buffer3[i]);
         EXPECT_SCALAR_EQ(out_buffer1[i], 3 * i);
         EXPECT_SCALAR_EQ(out_buffer2[i], 3 * i + 1);
         EXPECT_SCALAR_EQ(out_buffer3[i], 3 * i + 2);
