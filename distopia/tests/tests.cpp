@@ -467,8 +467,8 @@ TYPED_TEST(IdxDistancesTest, NoBoxKnownValues1)
     constexpr std::size_t Nidx = 18;
     constexpr std::size_t Ncoord = Nidx * 2;
     TypeParam coords[3 * Ncoord] = {0};
-    TypeParam out[Nidx];
     std::size_t idx[Ncoord];
+    TypeParam out[Nidx];
 
     std::iota(std::begin(idx), std::end(idx), 0);
     // string values along the x axis {0,0,0} {1,0,0}, {2,0,0} so corresponding
@@ -484,5 +484,34 @@ TYPED_TEST(IdxDistancesTest, NoBoxKnownValues1)
     for (int i = 0; i < Nidx; i++)
     {
         EXPECT_FLOAT_EQ(out[i], 1.0);
+    }
+}
+
+TYPED_TEST(IdxDistancesTest, CalcBondsOrthoBoxKnownValues0)
+{
+    constexpr std::size_t Nidx = 10;
+    constexpr std::size_t Ncoord = Nidx * 2;
+    TypeParam coords[3 * Ncoord] = {0};
+    TypeParam out[Nidx];
+    std::size_t idx[Ncoord];
+
+    std::iota(std::begin(idx), std::end(idx), 0);
+
+    // values strung out on x axis {0,0,0} {1,0,0}, {2,0,0}
+    for (int i = 0; i < Ncoord; i++)
+    {
+        if (i % 2)
+        {
+            coords[3 * i] = i;
+        }
+    }
+    TypeParam box[3] = {8, 8, 8};
+    TypeParam ref[Nidx] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
+
+    CalcBondsIdxOrtho(coords, idx, box, Nidx, out);
+
+    for (int i = 0; i < Nidx; i++)
+    {
+        EXPECT_SCALAR_EQ(ref[i], out[i]);
     }
 }
