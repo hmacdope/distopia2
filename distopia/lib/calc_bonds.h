@@ -38,11 +38,41 @@ namespace
         }
     }
 
+    template <typename VectorT, typename BoxT>
+    void CalcBondsIdxInner(const VectorToScalarT<VectorT> *coords,
+                           const std::size_t *idxs,
+                           const VectorToScalarT<VectorT> *box, std::size_t n,
+                           VectorToScalarT<VectorT> *out)
+    {
+        auto vecbox = BoxT(box);
+        VectorTriple<VectorT> c0{}, c1{};
+        std::size_t i = 0;
+        // indicies of the bonds
+        const std::size_t *b_i = idxs;
+        const std::size_t *b_j = idxs + 1;
+        if (n % ValuesPerPack<VectorT>)
+        {
+            c0.template idxload_and_deinterleave<2>(coords, b_i);
+            c1.template idxload_and_deinterleave<2>(coords, b_j);
+            VectorT result = PBC_Distance(c0, c1, vecbox);
+            result.store(out);
+            i += n % ValuesPerPack<VectorT>;
+        }
+        for (; i < n; i += ValuesPerPack<VectorT>)
+        {
+            c0.template idxload_and_deinterleave<2>(coords, b_i);
+            c1.template idxload_and_deinterleave<2>(coords, b_j);
+            VectorT result = PBC_Distance(c0, c1, vecbox);
+            result.store(&out[i]);
+            b_i += 2 * ValuesPerPack<VectorT>;
+            b_j += 2 * ValuesPerPack<VectorT>;
+        }
+    }
+
 }
 
-
 // Dispatching is done here on the templated functions defined in "distopia.h"
-// MaxVectorT<ScalarT> is used to get the largest possible vector for our 
+// MaxVectorT<ScalarT> is used to get the largest possible vector for our
 // instruction set.
 template <>
 void CalcBondsOrtho(const float *coords0, const float *coords1,
@@ -66,7 +96,38 @@ void CalcBondsNoBox(const float *coords0, const float *coords1, std::size_t n, f
 template <>
 void CalcBondsNoBox(const double *coords0, const double *coords1, std::size_t n, double *out)
 {
-    CalcBondsInner<MaxVectorT<double>, NoBox<MaxVectorT<double>>>(coords0, coords1, nullptr,  n, out);
+    CalcBondsInner<MaxVectorT<double>, NoBox<MaxVectorT<double>>>(coords0, coords1, nullptr, n, out);
+}
+
+// Index versions
+
+template <>
+void CalcBondsIdxOrtho(const float *coords, const std::size_t *idxs, const float *box,
+                       std::size_t n, float *out)
+{
+    CalcBondsIdxInner<MaxVectorT<float>, OrthogonalBox<MaxVectorT<float>>>(coords, idxs, box, n, out);
+}
+
+template <>
+void CalcBondsIdxOrtho(const double *coords, const std::size_t *idxs, const double *box,
+                       std::size_t n, double *out)
+{
+    CalcBondsIdxInner<MaxVectorT<double>, OrthogonalBox<MaxVectorT<double>>>(coords, idxs, box, n, out);
+}
+
+
+template <>
+void CalcBondsIdxNoBox(const float *coords, const std::size_t *idxs, 
+                       std::size_t n, float *out)
+{
+    CalcBondsIdxInner<MaxVectorT<float>, NoBox<MaxVectorT<float>>>(coords, idxs, nullptr, n, out);
+}
+
+template <>
+void CalcBondsIdxNoBox(const double *coords, const std::size_t *idxs, 
+                       std::size_t n, double *out)
+{
+    CalcBondsIdxInner<MaxVectorT<double>, NoBox<MaxVectorT<double>>>(coords, idxs, nullptr, n, out);
 }
 
 #endif // DISTOPIA_CALC_BONDS_H
