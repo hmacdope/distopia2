@@ -428,3 +428,61 @@ TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0)
         EXPECT_SCALAR_EQ(ref[i], out[i]);
     }
 }
+
+template <typename T>
+class IdxDistancesTest : public ::testing::Test
+{
+public:
+    // blank, we do all the stuff in each test
+};
+
+TYPED_TEST_SUITE(IdxDistancesTest, ScalarTypes);
+
+TYPED_TEST(IdxDistancesTest, NoBoxKnownValues0)
+{
+    // larger than the maximum possible vector size (16)
+    // for overhang on first loop, see CalcBondsIdxInner.
+    constexpr std::size_t Nidx = 18;
+    constexpr std::size_t Ncoord = Nidx * 2;
+    TypeParam coords[3 * Ncoord];
+    TypeParam out[Nidx];
+    std::size_t idx[Ncoord];
+
+    std::iota(std::begin(coords), std::end(coords), 0);
+    std::iota(std::begin(idx), std::end(idx), 0);
+
+    CalcBondsIdxNoBox(coords, idx, Nidx, out);
+
+    // result for every item should be 3sqrt(3)
+    TypeParam result = std::sqrt(27);
+
+    for (int i = 0; i < Nidx; i++)
+    {
+        EXPECT_SCALAR_EQ(out[i], result);
+    }
+}
+
+TYPED_TEST(IdxDistancesTest, NoBoxKnownValues1)
+{
+    constexpr std::size_t Nidx = 18;
+    constexpr std::size_t Ncoord = Nidx * 2;
+    TypeParam coords[3 * Ncoord] = {0};
+    TypeParam out[Nidx];
+    std::size_t idx[Ncoord];
+
+    std::iota(std::begin(idx), std::end(idx), 0);
+    // string values along the x axis {0,0,0} {1,0,0}, {2,0,0} so corresponding
+    // distances are all just 1.0
+
+    for (int i = 0; i < Ncoord; i++)
+    {
+        coords[3 * i] = i;
+    }
+
+    CalcBondsIdxNoBox(coords, idx, Nidx, out);
+
+    for (int i = 0; i < Nidx; i++)
+    {
+        EXPECT_FLOAT_EQ(out[i], 1.0);
+    }
+}
