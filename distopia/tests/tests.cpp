@@ -277,52 +277,66 @@ TEST(Deinterleave16Test, Deinterleave)
     }
 }
 
+// only Vec2d has width = 2 so no need for typed test
+TEST(VectorTripleDeinterleave2x3Test, Deinterleave)
+{
+
+    double in_buffer[9];
+
+    std::iota(std::begin(in_buffer), std::end(in_buffer), 0);
+
+    auto vt = VectorTriple<Vec2d>();
+
+    std::size_t idx[2]; // {1, 2}
+    std::iota(std::begin(idx), std::end(idx), 1);
+
+    vt.idxload_and_deinterleave<1>(in_buffer, idx);
+
+    double out_buffer1[2];
+    double out_buffer2[2];
+    double out_buffer3[2];
+
+    vt.x.store(out_buffer1);
+    vt.y.store(out_buffer2);
+    vt.z.store(out_buffer3);
+
+    for (int i = 0; i < 2; i++) // +1 as we use indexes {1,2}
+    {
+        EXPECT_SCALAR_EQ(out_buffer1[i], 3 * (i + 1));
+        EXPECT_SCALAR_EQ(out_buffer2[i], 3 * (i + 1) + 1);
+        EXPECT_SCALAR_EQ(out_buffer3[i], 3 * (i + 1) + 2);
+    }
+}
+
 // only Vec16f has width = 16 so no need for typed test
-// more programmatic version of the above test because typing all the indices is
-// tiring
-TEST(Deinterleave16x3Test, Deinterleave)
+TEST(VectorTripleDeinterleave16x3Test, Deinterleave)
 {
 
     float in_buffer[60];
 
     std::iota(std::begin(in_buffer), std::end(in_buffer), 0);
 
-    Vec4f a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p;
-    Vec16f x, y, z;
+    auto vt = VectorTriple<Vec16f>();
 
-    a.load(in_buffer);
-    b.load(in_buffer + 4);
-    c.load(in_buffer + 8);
-    d.load(in_buffer + 12);
-    e.load(in_buffer + 16);
-    f.load(in_buffer + 20);
-    g.load(in_buffer + 24);
-    h.load(in_buffer + 28);
-    i.load(in_buffer + 32);
-    j.load(in_buffer + 36);
-    k.load(in_buffer + 40);
-    l.load(in_buffer + 44);
-    m.load(in_buffer + 48);
-    n.load(in_buffer + 52);
-    o.load(in_buffer + 56);
-    p.load(in_buffer + 60);
+    std::size_t idx[16];
+    std::iota(std::begin(idx), std::end(idx), 0);
+
+    vt.idxload_and_deinterleave<1>(in_buffer, idx);
 
     float out_buffer1[16];
     float out_buffer2[16];
     float out_buffer3[16];
 
-    Deinterleave16x3(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, x, y, z);
-
-    x.store(out_buffer1);
-    y.store(out_buffer2);
-    z.store(out_buffer3);
+    vt.x.store(out_buffer1);
+    vt.y.store(out_buffer2);
+    vt.z.store(out_buffer3);
 
     for (int i = 0; i < 16; i++)
     {
         printf(" %f %f %f \n", out_buffer1[i], out_buffer2[i], out_buffer3[i]);
-        // EXPECT_SCALAR_EQ(out_buffer1[i], 3 * i);
-        // EXPECT_SCALAR_EQ(out_buffer2[i], 3 * i + 1);
-        // EXPECT_SCALAR_EQ(out_buffer3[i], 3 * i + 2);
+        EXPECT_SCALAR_EQ(out_buffer1[i], 3 * i);
+        EXPECT_SCALAR_EQ(out_buffer2[i], 3 * i + 1);
+        EXPECT_SCALAR_EQ(out_buffer3[i], 3 * i + 2);
     }
 }
 
