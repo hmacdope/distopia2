@@ -1,7 +1,6 @@
 #ifndef DISTOPIA_H
 #define DISTOPIA_H
 
-#include "gtest/gtest.h"
 
 /*! \file 
     \brief Main public header for distopia
