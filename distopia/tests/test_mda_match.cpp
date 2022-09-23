@@ -2,26 +2,26 @@
 #include <iostream>
 #include <numeric>
 
-#include "gtest/gtest.h"
-#include "test_utils.h"
 #include "test_fixtures.h"
+#include "test_utils.h"
+#include "gtest/gtest.h"
 
-#include "../include/distopia.h"
-#include "../lib/calc_bonds.h"
 #include "../compare/calc_distances.h"
 #include "../compare/vanilla.h"
+#include "../include/distopia.h"
+#include "../lib/calc_bonds.h"
 
 // constants
 constexpr int BOXSIZE = 10;
 constexpr int NRESULTS = 10000;
-constexpr int NINDICIES =  1000;
+constexpr int NINDICIES = 1000;
 constexpr double abs_err = 1.0e-5;
 
 using FloatOnly = ::testing::Types<float>;
 
 TYPED_TEST_SUITE(Coordinates, FloatOnly);
 
-// coordinates in this test can overhang the edge of the box by 2 * the box
+// coordinates in this test can overhang the edge of the box by 3 * the box
 // size.
 TYPED_TEST(Coordinates, CalcBondsMatchesMDA) {
   this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
@@ -34,7 +34,6 @@ TYPED_TEST(Coordinates, CalcBondsMatchesMDA) {
 
   for (std::size_t i = 0; i < this->nresults; i++) {
     EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
-    // loss of accuracy somewhere?
   }
 }
 
@@ -47,7 +46,6 @@ TYPED_TEST(Coordinates, CalcBondsNoBoxMatchesMDA) {
 
   for (std::size_t i = 0; i < this->nresults; i++) {
     EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
-    // loss of accuracy somewhere?
   }
 }
 
@@ -62,7 +60,6 @@ TYPED_TEST(Coordinates, VanillaCalcBondsMatchesMDA) {
 
   for (std::size_t i = 0; i < this->nresults; i++) {
     EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
-    // loss of accuracy somewhere?
   }
 }
 
@@ -71,6 +68,31 @@ TYPED_TEST(Coordinates, VanillaCalcBondsNoBoxMatchesMDA) {
 
   _calc_bond_distance((coordinate *)this->coords0, (coordinate *)this->coords1,
                       this->nresults, this->ref);
+  VanillaCalcBondsNoBox(this->coords0, this->coords1, this->nresults,
+                        this->results);
+
+  for (std::size_t i = 0; i < this->nresults; i++) {
+    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+  }
+}
+
+TYPED_TEST(Coordinates, CalcBondsMatchesVanilla) {
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
+
+  CalcBondsOrtho(this->coords0, this->coords1, this->box, this->nresults,
+                 this->ref);
+  VanillaCalcBonds(this->coords0, this->coords1, this->box, this->nresults,
+                   this->results);
+
+  for (std::size_t i = 0; i < this->nresults; i++) {
+    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
+  }
+}
+
+TYPED_TEST(Coordinates, CalcBondsNoBoxMatchesVanilla) {
+  this->InitCoords(NRESULTS, NINDICIES, BOXSIZE, 3 * BOXSIZE);
+
+  CalcBondsNoBox(this->coords0, this->coords1, this->nresults, this->ref);
   VanillaCalcBondsNoBox(this->coords0, this->coords1, this->nresults,
                         this->results);
 
