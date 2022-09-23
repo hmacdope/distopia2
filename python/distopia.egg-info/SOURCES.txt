@@ -1,0 +1,7 @@
+setup.py
+distopia/__init__.py
+distopia/libdistopia.cpp
+distopia.egg-info/PKG-INFO
+distopia.egg-info/SOURCES.txt
+distopia.egg-info/dependency_links.txt
+distopia.egg-info/top_level.txt
