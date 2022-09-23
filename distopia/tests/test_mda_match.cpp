@@ -12,9 +12,10 @@
 #include "../compare/vanilla.h"
 
 // constants
-#define BOXSIZE 10
-#define NRESULTS 10000
-#define NINDICIES 1000
+constexpr int BOXSIZE = 10;
+constexpr int NRESULTS = 10000;
+constexpr int NINDICIES =  1000;
+constexpr double abs_err = 1.0e-5;
 
 using FloatOnly = ::testing::Types<float>;
 
@@ -32,7 +33,7 @@ TYPED_TEST(Coordinates, CalcBondsMatchesMDA) {
                  this->results);
 
   for (std::size_t i = 0; i < this->nresults; i++) {
-    EXPECT_NEAR(this->results[i], this->ref[i], 0.00001);
+    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
     // loss of accuracy somewhere?
   }
 }
@@ -45,7 +46,7 @@ TYPED_TEST(Coordinates, CalcBondsNoBoxMatchesMDA) {
   CalcBondsNoBox(this->coords0, this->coords1, this->nresults, this->results);
 
   for (std::size_t i = 0; i < this->nresults; i++) {
-    EXPECT_NEAR(this->results[i], this->ref[i], 0.00001);
+    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
     // loss of accuracy somewhere?
   }
 }
@@ -60,7 +61,7 @@ TYPED_TEST(Coordinates, VanillaCalcBondsMatchesMDA) {
                    this->results);
 
   for (std::size_t i = 0; i < this->nresults; i++) {
-    EXPECT_NEAR(this->results[i], this->ref[i], 0.00001);
+    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
     // loss of accuracy somewhere?
   }
 }
@@ -74,7 +75,6 @@ TYPED_TEST(Coordinates, VanillaCalcBondsNoBoxMatchesMDA) {
                         this->results);
 
   for (std::size_t i = 0; i < this->nresults; i++) {
-    EXPECT_NEAR(this->results[i], this->ref[i], 0.00001);
-    // loss of accuracy somewhere?
+    EXPECT_NEAR(this->results[i], this->ref[i], abs_err);
   }
 }
