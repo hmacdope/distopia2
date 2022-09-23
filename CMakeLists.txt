@@ -342,10 +342,10 @@ if(DISTOPIA_BUILD_TIMINGS)
     message(FATAL_ERROR "Building googlebench timings requires building googletest also")
   endif()
 
+  SET(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Turn off googlebench tests" FORCE)
   # google bench
   add_subdirectory(${DISTOPIA_TEST_DIR}/googlebench)
 
-  set(BENCHMARK_ENABLE_GTEST_TESTS, off)
   # googlebench executable
   add_executable(benchmarks ${DISTOPIA_TEST_DIR}/benchmark.cpp)
   target_compile_options(benchmarks
