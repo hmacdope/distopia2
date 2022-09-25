@@ -1,11 +1,11 @@
 from setuptools import setup, Extension, find_packages
 from Cython.Build import cythonize
-
+import numpy as np
 
 libdistopia = Extension(
     name='distopia.libdistopia',
     sources=['distopia/libdistopia.pyx'],
-    include_dirs=['../distopia/include/', '../distopia/lib/'],
+    include_dirs=['../distopia/include/', '../distopia/lib/', np.get_include()],
     library_dirs=['../build'],
     runtime_library_dirs=['../build/'],
     libraries=['distopia'],
