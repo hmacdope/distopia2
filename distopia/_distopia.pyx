@@ -1,7 +1,7 @@
 # distutils: language = c++
 
-cimport cython
 import numpy as np
+cimport cython
 cimport numpy as cnp
 cnp.import_array()
 
@@ -26,16 +26,17 @@ cdef extern from "distopia.h" nogil:
                               const size_t * idxs,
                               size_t n, T * out)
 
+
 @cython.boundscheck(False)
-@cython.wraparound(False) 
-cpdef cnp.ndarray[cnp.float32_t, ndim= 1] calc_bonds_ortho_float(float[:, ::1] coords1,
-                                                                  float[:, ::1] coords2,
+@cython.wraparound(False)
+cpdef cnp.ndarray[cnp.float32_t, ndim=1] calc_bonds_ortho_float(float[:, ::1] coords0,
+                                                                  float[:, ::1] coords1,
                                                                   float[::1] box):
-    """Calculate pairwise distances between coords1 and coords2
+    """Calculate pairwise distances between coords0 and coords1
 
     Parameters
     ----------
-    coords1, coords2 : float32 array
+    coords0, coords1 : float32 array
       must be same length
     box : float32 array
       periodic boundary dimensions
@@ -43,30 +44,31 @@ cpdef cnp.ndarray[cnp.float32_t, ndim= 1] calc_bonds_ortho_float(float[:, ::1] c
     Returns
     -------
     distances : float32 array
-      same size as coords1/2
+      same size as coords0/coords1
     """
     cdef float[::1] results_view
-    cdef size_t nvals = coords1.shape[0]
+    cdef size_t nvals = coords0.shape[0]
     cdef cnp.npy_intp[1] dims
-    dims[0] = <ssize_t> nvals #FIXME truncation?
-    cdef cnp.ndarray[cnp.float32_t, ndim= 1] results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
-    
+    dims[0] = <ssize_t > nvals  # FIXME truncation?
+    cdef cnp.ndarray[cnp.float32_t, ndim=1] results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+
     results_view = results
 
-    CalcBondsOrtho(& coords1[0][0], & coords2[0][0], & box[0], nvals, & results_view[0])
+    CalcBondsOrtho(& coords0[0][0], & coords1[0][0], & box[0], nvals, & results_view[0])
 
     return results
 
+
 @cython.boundscheck(False)
-@cython.wraparound(False) 
-cpdef cnp.ndarray[cnp.float64_t, ndim=1] calc_bonds_ortho_double(double[:, ::1] coords1,
-                                                                   double[:, ::1] coords2,
-                                                                   double[::1] box):
-    """Calculate pairwise distances between coords1 and coords2
+@cython.wraparound(False)
+cpdef cnp.ndarray[cnp.float64_t, ndim=1] calc_bonds_ortho_double(double[:, ::1] coords0,
+                                                                  double[:, ::1] coords1,
+                                                                  double[::1] box):
+    """Calculate pairwise distances between coords0 and coords1
 
     Parameters
     ----------
-    coords1, coords2 : float64 array
+    coords0, coords1 : float64 array
       must be same length
     box : float64 array
       periodic boundary dimensions
@@ -74,59 +76,59 @@ cpdef cnp.ndarray[cnp.float64_t, ndim=1] calc_bonds_ortho_double(double[:, ::1] 
     Returns
     -------
     distances : float64 array
-      same size as coords1/2
+      same size as coords0/coords1
     """
     cdef double[::1] results_view
-    cdef size_t nvals = coords1.shape[0]
+    cdef size_t nvals = coords0.shape[0]
     cdef cnp.npy_intp[1] dims
-    dims[0] = <ssize_t> nvals #FIXME truncation?
-    cdef cnp.ndarray[cnp.float64_t, ndim= 1] results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+    dims[0] = <ssize_t > nvals  # FIXME truncation?
+    cdef cnp.ndarray[cnp.float64_t, ndim=1] results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
 
     results_view = results
 
-    CalcBondsOrtho(& coords1[0][0], & coords2[0][0], & box[0], nvals, & results_view[0])
+    CalcBondsOrtho(& coords0[0][0], & coords1[0][0], & box[0], nvals, & results_view[0])
 
     return results
 
+
 @cython.boundscheck(False)
-@cython.wraparound(False) 
-cpdef cnp.ndarray[cnp.float32_t, ndim= 1] calc_bonds_no_box_float(float[:, ::1] coords1,
-                                                                   float[:, ::1] coords2,
-                                                                   float[::1] box):
-    """Calculate pairwise distances between coords1 and coords2
+@cython.wraparound(False)
+cpdef cnp.ndarray[cnp.float32_t, ndim=1] calc_bonds_no_box_float(float[:, ::1] coords0,
+                                                                   float[:, ::1] coords1):
+    """Calculate pairwise distances between coords0 and coords1
 
     Parameters
     ----------
-    coords1, coords2 : float32 array
+    coords0, coords1 : float32 array
       must be same length
 
     Returns
     -------
     distances : float32 array
-      same size as coords1/2
+      same size as coords0/coords1
     """
     cdef float[::1] results_view
-    cdef size_t nvals = coords1.shape[0]
+    cdef size_t nvals = coords0.shape[0]
     cdef cnp.npy_intp[1] dims
-    dims[0] = <ssize_t> nvals #FIXME truncation?
-    cdef cnp.ndarray[cnp.float32_t, ndim= 1] results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
+    dims[0] = <ssize_t > nvals  # FIXME truncation?
+    cdef cnp.ndarray[cnp.float32_t, ndim=1] results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
 
     results_view = results
 
-    CalcBondsNoBox(& coords1[0][0], & coords2[0][0], nvals, & results_view[0])
+    CalcBondsNoBox(& coords0[0][0], & coords1[0][0], nvals, & results_view[0])
 
     return results
 
+
 @cython.boundscheck(False)
-@cython.wraparound(False) 
-cpdef cnp.ndarray[cnp.float64_t, ndim= 1] calc_bonds_no_box_double(double[:, ::1] coords1,
-                                                                    double[:, ::1] coords2,
-                                                                    double[::1] box):
-    """Calculate pairwise distances between coords1 and coords2
+@cython.wraparound(False)
+cpdef cnp.ndarray[cnp.float64_t, ndim=1] calc_bonds_no_box_double(double[:, ::1] coords0,
+                                                                    double[:, ::1] coords1):
+    """Calculate pairwise distances between coords0 and coords1
 
     Parameters
     ----------
-    coords1, coords2 : float64 array
+    coords0, coords1 : float64 array
       must be same length
     box : float64 array
       periodic boundary dimensions
@@ -134,25 +136,26 @@ cpdef cnp.ndarray[cnp.float64_t, ndim= 1] calc_bonds_no_box_double(double[:, ::1
     Returns
     -------
     distances : float64 array
-      same size as coords1/2
+      same size as coords0/coords1
     """
     cdef double[::1] results_view
-    cdef size_t nvals = coords1.shape[0]
+    cdef size_t nvals = coords0.shape[0]
     cdef cnp.npy_intp[1] dims
-    dims[0] = <ssize_t> nvals #FIXME truncation?
-    cdef cnp.ndarray[cnp.float64_t, ndim= 1] results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
+    dims[0] = <ssize_t > nvals  # FIXME truncation?
+    cdef cnp.ndarray[cnp.float64_t, ndim=1] results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
 
     results_view = results
 
-    CalcBondsNoBox(& coords1[0][0], & coords2[0][0], nvals, & results_view[0])
+    CalcBondsNoBox(& coords0[0][0], & coords1[0][0], nvals, & results_view[0])
 
     return results
 
+
 @cython.boundscheck(False)
-@cython.wraparound(False) 
-cpdef cnp.ndarray[cnp.float32_t, ndim= 1] calc_bonds_idx_ortho_float(float[:, ::1] coords,
-                                                                    size_t[::1] idx,
-                                                                    float[::1] box):
+@cython.wraparound(False)
+cpdef cnp.ndarray[cnp.float32_t, ndim=1] calc_bonds_idx_ortho_float(float[:, ::1] coords,
+                                                                      size_t[::1] idx,
+                                                                      float[::1] box):
     """Calculate distances between pairs of coordinates by index
 
     Parameters
@@ -170,23 +173,23 @@ cpdef cnp.ndarray[cnp.float32_t, ndim= 1] calc_bonds_idx_ortho_float(float[:, ::
       half the size of idx
     """
     cdef float[::1] results_view
-    cdef size_t nvals = idx.shape[0] // 2 # SAFE?
+    cdef size_t nvals = idx.shape[0] // 2  # SAFE?
     cdef cnp.npy_intp[1] dims
-    dims[0] = <ssize_t> nvals #FIXME truncation?
+    dims[0] = <ssize_t > nvals  # FIXME truncation?
     cdef cnp.ndarray[cnp.float32_t, ndim=1] results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
 
     results_view = results
 
-    CalcBondsIdxOrtho(& coords[0][0], &idx[0], & box[0], nvals, & results_view[0])
+    CalcBondsIdxOrtho( & coords[0][0], & idx[0], & box[0], nvals, & results_view[0])
 
     return results
 
 
 @cython.boundscheck(False)
-@cython.wraparound(False) 
-cpdef cnp.ndarray[cnp.float64_t, ndim= 1] calc_bonds_idx_ortho_double(double[:, ::1] coords,
-                                                                    size_t[::1] idx,
-                                                                    double[::1] box):
+@cython.wraparound(False)
+cpdef cnp.ndarray[cnp.float64_t, ndim=1] calc_bonds_idx_ortho_double(double[:, ::1] coords,
+                                                                       size_t[::1] idx,
+                                                                       double[::1] box):
     """Calculate distances between pairs of coordinates by index
 
     Parameters
@@ -204,21 +207,22 @@ cpdef cnp.ndarray[cnp.float64_t, ndim= 1] calc_bonds_idx_ortho_double(double[:, 
       half the size of idx
     """
     cdef double[::1] results_view
-    cdef size_t nvals = idx.shape[0] // 2 # SAFE?
+    cdef size_t nvals = idx.shape[0] // 2  # SAFE?
     cdef cnp.npy_intp[1] dims
-    dims[0] = <ssize_t> nvals #FIXME truncation?
+    dims[0] = <ssize_t > nvals  # FIXME truncation?
     cdef cnp.ndarray[cnp.float64_t, ndim=1] results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
 
     results_view = results
 
-    CalcBondsIdxOrtho(& coords[0][0], &idx[0], & box[0], nvals, & results_view[0])
+    CalcBondsIdxOrtho( & coords[0][0], & idx[0], & box[0], nvals, & results_view[0])
 
     return results
 
+
 @cython.boundscheck(False)
-@cython.wraparound(False) 
-cpdef cnp.ndarray[cnp.float32_t, ndim= 1] calc_bonds_idx_no_box_float(float[:, ::1] coords,
-                                                                    size_t[::1] idx):
+@cython.wraparound(False)
+cpdef cnp.ndarray[cnp.float32_t, ndim=1] calc_bonds_idx_no_box_float(float[:, ::1] coords,
+                                                                       size_t[::1] idx):
     """Calculate distances between pairs of coordinates by index
 
     Parameters
@@ -234,23 +238,22 @@ cpdef cnp.ndarray[cnp.float32_t, ndim= 1] calc_bonds_idx_no_box_float(float[:, :
       half the size of idx
     """
     cdef float[::1] results_view
-    cdef size_t nvals = idx.shape[0] // 2 # SAFE?
+    cdef size_t nvals = idx.shape[0] // 2  # SAFE?
     cdef cnp.npy_intp[1] dims
-    dims[0] = <ssize_t> nvals #FIXME truncation?
+    dims[0] = <ssize_t > nvals  # FIXME truncation?
     cdef cnp.ndarray[cnp.float32_t, ndim=1] results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT32, 0)
 
     results_view = results
 
-    CalcBondsIdxNoBox(& coords[0][0], &idx[0], nvals, & results_view[0])
+    CalcBondsIdxNoBox( & coords[0][0], & idx[0], nvals, & results_view[0])
 
     return results
 
 
-
 @cython.boundscheck(False)
-@cython.wraparound(False) 
-cpdef cnp.ndarray[cnp.float64_t, ndim= 1] calc_bonds_idx_no_box_double(double[:, ::1] coords,
-                                                                    size_t[::1] idx):
+@cython.wraparound(False)
+cpdef cnp.ndarray[cnp.float64_t, ndim=1] calc_bonds_idx_no_box_double(double[:, ::1] coords,
+                                                                        size_t[::1] idx):
     """Calculate distances between pairs of coordinates by index
 
     Parameters
@@ -266,14 +269,13 @@ cpdef cnp.ndarray[cnp.float64_t, ndim= 1] calc_bonds_idx_no_box_double(double[:,
       half the size of idx
     """
     cdef double[::1] results_view
-    cdef size_t nvals = idx.shape[0] // 2 # SAFE?
+    cdef size_t nvals = idx.shape[0] // 2  # SAFE?
     cdef cnp.npy_intp[1] dims
-    dims[0] = <ssize_t> nvals #FIXME truncation?
+    dims[0] = <ssize_t > nvals  # FIXME truncation?
     cdef cnp.ndarray[cnp.float64_t, ndim=1] results = cnp.PyArray_EMPTY(1, dims, cnp.NPY_FLOAT64, 0)
 
     results_view = results
 
-    CalcBondsIdxNoBox(& coords[0][0], &idx[0], nvals, & results_view[0])
+    CalcBondsIdxNoBox( & coords[0][0], & idx[0], nvals, & results_view[0])
 
     return results
-
