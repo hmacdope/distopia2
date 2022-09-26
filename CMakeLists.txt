@@ -14,6 +14,9 @@ include_directories(${NumPy_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/libdistopia/libdistopia/include)
 include_directories(${PROJECT_SOURCE_DIR}/libdistopia/libdistopia/lib)
 
+set(CMAKE_MACOSX_RPATH 1)
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}")
+
 # distopia c++ library
 add_subdirectory(libdistopia)
 # python layer
