@@ -5,6 +5,9 @@
 #include "simd_swizzles.h"
 #include "vectorclass.h"
 
+#include <iostream>
+
+
 template <typename VectorT>
 class VectorTriple
 {

@@ -59,7 +59,7 @@ cpdef cnp.ndarray[cnp.float32_t, ndim= 1] calc_bonds_ortho_float(float[:, ::1] c
 
 @cython.boundscheck(False)
 @cython.wraparound(False) 
-cpdef cnp.ndarray[cnp.float64_t, ndim= 1] calc_bonds_ortho_double(double[:, ::1] coords1,
+cpdef cnp.ndarray[cnp.float64_t, ndim=1] calc_bonds_ortho_double(double[:, ::1] coords1,
                                                                    double[:, ::1] coords2,
                                                                    double[::1] box):
     """Calculate pairwise distances between coords1 and coords2

@@ -11,10 +11,10 @@ find_package(Cython REQUIRED)
 find_package(NumPy REQUIRED)
 
 include_directories(${NumPy_INCLUDE_DIRS})
-include_directories(${PROJECT_SOURCE_DIR}/distopia/libdistopia/include)
-include_directories(${PROJECT_SOURCE_DIR}/distopia/libdistopia/lib)
+include_directories(${PROJECT_SOURCE_DIR}/libdistopia/libdistopia/include)
+include_directories(${PROJECT_SOURCE_DIR}/libdistopia/libdistopia/lib)
 
 # distopia c++ library
-add_subdirectory(distopia)
+add_subdirectory(libdistopia)
 # python layer
-add_subdirectory(python)
+add_subdirectory(distopia)
