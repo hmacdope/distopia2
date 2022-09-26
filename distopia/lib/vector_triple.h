@@ -62,7 +62,9 @@ public:
     void debug_print(const char *nm)
     {
         ScalarT debug[size * 3];
-        this->store(debug);
+        x.store(debug);
+        y.store(debug + size);
+        z.store(debug + 2 * size);
         std::cerr << nm << " ";
         for (unsigned char i = 0; i < size * 3; ++i)
             std::cerr << debug[i] << " ";

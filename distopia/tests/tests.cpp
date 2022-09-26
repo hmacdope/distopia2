@@ -494,15 +494,18 @@ TYPED_TEST(IdxDistancesTest, CalcBondsOrthoBoxKnownValues0)
     TypeParam coords[3 * Ncoord] = {0};
     TypeParam out[Nidx];
     std::size_t idx[Ncoord];
+    int j = 0;
 
     std::iota(std::begin(idx), std::end(idx), 0);
 
     // values strung out on x axis {0,0,0} {1,0,0}, {2,0,0}
+    // alternates with {0,0,0}
     for (int i = 0; i < Ncoord; i++)
     {
         if (i % 2)
         {
-            coords[3 * i] = i;
+            coords[3 * i] = j;
+            j += 1;
         }
     }
     TypeParam box[3] = {8, 8, 8};

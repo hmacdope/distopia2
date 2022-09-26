@@ -50,13 +50,16 @@ namespace
         // indicies of the bonds
         const std::size_t *b_i = idxs;
         const std::size_t *b_j = idxs + 1;
-        if (n % ValuesPerPack<VectorT>)
+        std::size_t overhang = n % ValuesPerPack<VectorT>;
+        if (overhang)
         {
             c0.template idxload_and_deinterleave<2>(coords, b_i);
             c1.template idxload_and_deinterleave<2>(coords, b_j);
             VectorT result = PBC_Distance(c0, c1, vecbox);
             result.store(out);
-            i += n % ValuesPerPack<VectorT>;
+            i += overhang;
+            b_i += 2 * overhang;
+            b_j += 2 * overhang;
         }
         for (; i < n; i += ValuesPerPack<VectorT>)
         {
@@ -115,16 +118,15 @@ void CalcBondsIdxOrtho(const double *coords, const std::size_t *idxs, const doub
     CalcBondsIdxInner<MaxVectorT<double>, OrthogonalBox<MaxVectorT<double>>>(coords, idxs, box, n, out);
 }
 
-
 template <>
-void CalcBondsIdxNoBox(const float *coords, const std::size_t *idxs, 
+void CalcBondsIdxNoBox(const float *coords, const std::size_t *idxs,
                        std::size_t n, float *out)
 {
     CalcBondsIdxInner<MaxVectorT<float>, NoBox<MaxVectorT<float>>>(coords, idxs, nullptr, n, out);
 }
 
 template <>
-void CalcBondsIdxNoBox(const double *coords, const std::size_t *idxs, 
+void CalcBondsIdxNoBox(const double *coords, const std::size_t *idxs,
                        std::size_t n, double *out)
 {
     CalcBondsIdxInner<MaxVectorT<double>, NoBox<MaxVectorT<double>>>(coords, idxs, nullptr, n, out);
