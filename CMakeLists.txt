@@ -14,6 +14,7 @@ include_directories(${NumPy_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/distopia/libdistopia/include)
 include_directories(${PROJECT_SOURCE_DIR}/distopia/libdistopia/lib)
 
-
+# distopia c++ library
 add_subdirectory(distopia)
+# python layer
 add_subdirectory(python)
