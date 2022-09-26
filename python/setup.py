@@ -18,5 +18,5 @@ setup(
     version='0.0.1',
     packages=find_packages(),
     ext_modules=cythonize([libdistopia],
-                          compiler_directives={'language_level': 3}),
+                          compiler_directives={'language_level': 3}, annotate=True),
 )
