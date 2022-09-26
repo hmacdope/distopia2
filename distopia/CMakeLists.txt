@@ -348,7 +348,7 @@ if(DISTOPIA_BUILD_TIMINGS)
 endif()
 
 set_target_properties(distopia
-        PROPERTIES PUBLIC_HEADER ${PROJECT_SOURCE_DIR}/distopia/distopia.h)
+        PROPERTIES PUBLIC_HEADER ${DISTOPIA_ROOT_SOURCE_DIR}/libdistopia/include/distopia.h)
 
 install(TARGETS distopia
         DESTINATION lib
