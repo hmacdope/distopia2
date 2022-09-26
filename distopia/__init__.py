@@ -1,4 +1,4 @@
-from .distopia import (
+from ._distopia import (
     calc_bonds_ortho_float,
     calc_bonds_ortho_double,
     calc_bonds_no_box_float,
