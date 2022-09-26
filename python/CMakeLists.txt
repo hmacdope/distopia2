@@ -1,6 +1,6 @@
 # distopia python layer
-
-add_cython_target(libdistopia CXX PY3 )
-add_library(distopia_py MODULE ${libdistopia})
-python_extension_module(distopia_py)
-target_link_libraries(distopia_py distopia)
+add_cython_target(distopia CXX PY3)
+add_library(pydistopia MODULE ${distopia})
+python_extension_module(pydistopia)
+target_link_libraries(pydistopia distopia)
+install(TARGETS pydistopia LIBRARY DESTINATION pydistopia)
