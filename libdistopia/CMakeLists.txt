@@ -13,6 +13,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/cmake/CodeCoverage.cmake)
 # user options for SIMD instructions
 option(DISTOPIA_AUTO_SELECT_SIMD "Let Distopia choose highest instruction set only" off)
 option(DISTOPIA_MANUAL_SELECT_SIMD "Build Distopia for a single instruction set which must be explicitly specified  " off)
+option(DISTOPIA_AGRESSIVE_MARCH "Allow distopia to build with march=native and mtune=native" off)
 
 option(DISTOPIA_DISPATCH "Build Distopia with multiple instruction sets" off)
 option(DISTOPIA_DISPATCH_MAX "Build Distopia with as many instruction sets as is supported" off)
@@ -121,7 +122,7 @@ endif()
 
 
 
-message(STATUS "${Blue}Checking what level of SIMD is supported by compiler${ColourReset}")
+message(STATUS "${Cyan}Checking what level of SIMD is supported on this machine${ColourReset}")
 #check the levels of SIMD supported
 find_package(SSE)
 find_package(AVX)
@@ -213,40 +214,36 @@ else()
   set(AVX512_SUPPORTED false)
 endif()
 
-message(STATUS "${Blue}Highest level of SIMD supported is ${HIGHEST_SIMD_SUPPORTED} ${ColourReset}")
+message(STATUS "${Cyan}Highest level of SIMD supported is ${HIGHEST_SIMD_SUPPORTED} ${ColourReset}")
 
 
 if(DISTOPIA_AUTO_SELECT_SIMD)
-  message(STATUS "${Green}DISTOPIA_AUTO_SELECT_SIMD is ON, selecting SIMD highest SIMD flavour ONLY ${ColourReset}")
-  message(STATUS "${Green}Highest level of SIMD supported is ${HIGHEST_SIMD_SUPPORTED} ${ColourReset}")
+  message(STATUS "${Green}DISTOPIA_AUTO_SELECT_SIMD is ON, using ${HIGHEST_SIMD_SUPPORTED} ${ColourReset}")
   set(DISTOPIA_USE_${HIGHEST_SIMD_SUPPORTED} on)  
 endif()
 
-
-
 # choose SIMD and set flags 
 set(DISTOPIA_SIMD_FLAGS)
-set(DISTOPIA_FALLTHROUGH false)
 
-if(DISTOPIA_USE_SSE1 AND SSE1_SUPPORTED)
+if(DISTOPIA_USE_SSE1)
   message(STATUS "${Cyan}DISTOPIA SSE1 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-msse" "-mfma")
   add_compile_definitions(DISTOPIA_USE_SSE1=1)
 endif()
 
-if(DISTOPIA_USE_SSE2 AND SSE2_SUPPORTED)
+if(DISTOPIA_USE_SSE2)
   message(STATUS "${Cyan}DISTOPIA SSE2 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-msse2" "-mfma")
   add_compile_definitions(DISTOPIA_USE_SSE2=1)
 endif()
 
-if(DISTOPIA_USE_SSE3 AND SSE3_SUPPORTED)
+if(DISTOPIA_USE_SSE3)
   message(STATUS "${Cyan}DISTOPIA SSE3 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-msse3" "-mfma")
   add_compile_definitions(DISTOPIA_USE_SSE3=1)
 endif()
 
-if(DISTOPIA_USE_SSSE3 AND SSSE3_SUPPORTED)
+if(DISTOPIA_USE_SSSE3)
   message(STATUS "${Cyan}DISTOPIA SSSE3 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-mssse3" "-mfma")
   add_compile_definitions(DISTOPIA_USE_SSSE3=1)
@@ -258,73 +255,60 @@ if(DISTOPIA_USE_SSE4_1 AND SSE4_1_SUPPORTED)
   add_compile_definitions(DISTOPIA_USE_SSE4_1=1)
 endif()
 
-if(DISTOPIA_USE_SSE4_2 AND SSE4_2_SUPPORTED)
+if(DISTOPIA_USE_SSE4_2)
   message(STATUS "${Cyan}DISTOPIA SSE4_2 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-msse4.2"  "-mfma")
   add_compile_definitions(DISTOPIA_USE_SSE4_2=1)
 endif()
 
-if(DISTOPIA_USE_AVX AND AVX_SUPPORTED)
+if(DISTOPIA_USE_AVX)
   message(STATUS "${Cyan}DISTOPIA AVX SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-mavx"  "-mfma")
   add_compile_definitions(DISTOPIA_USE_AVX=1)
 endif()
 
-if(DISTOPIA_USE_AVX2 AND AVX2_SUPPORTED)
+if(DISTOPIA_USE_AVX2)
   message(STATUS "${Cyan}DISTOPIA AVX2 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-mavx2"  "-mfma")
   add_compile_definitions(DISTOPIA_USE_AVX2=1)
 endif()
 
-if(DISTOPIA_USE_AVX512 AND AVX512_SUPPORTED)
+if(DISTOPIA_USE_AVX512)
   message(STATUS "${Cyan}DISTOPIA AVX512 SELECTED${ColourReset}")
   list(APPEND DISTOPIA_SIMD_FLAGS "-mavx512" "-mfma") # note that this is a bit platform specific
   add_compile_definitions(DISTOPIA_USE_AVX512=1)
 endif()
 
-if(NOT DISTOPIA_DISPATCH)
-  set(DISTOPIA_FALLTHROUGH true)
-  message(STATUS "${Cyan} No SIMD type explicitly selected, fallthrough to -march=native -mtune=native -O3 flags.${ColourReset}")
-  add_compile_definitions(DISTOPIA_FALLTHROUGH=1)
+if(DISTOPIA_AGRESSIVE_MARCH)
+  message(STATUS "${Green}DISTOPIA_AGRESSIVE_MARCH is ON.\n Enabling aggressive optimisations for CPU type with -march=native and -mtune=native ${ColourReset}")
+  message(STATUS "${Yellow}Warning this will OVERRIDE SIMD specific options ${ColourReset}")
+  list(APPEND CXX_FLAGS "-march=native" "-mtune=native")
+  message(STATUS "${Cyan}SIMD FLAGS are ${CXX_FLAGS} ${ColourReset}")
+else()
+  message(STATUS "${Green}Aggressive CPU type optimisations (march=native mtune=native) disabled, enable them with DISTOPIA_AGRESSIVE_MARCH${ColourReset}")
+  list(APPEND CXX_FLAGS ${DISTOPIA_SIMD_FLAGS})
+  list(APPEND CXX_FLAGS_DEBUG ${DISTOPIA_SIMD_FLAGS})
+  list(APPEND CXX_FLAGS_RELEASE ${DISTOPIA_SIMD_FLAGS})
+  list(APPEND CXX_FLAGS_COVERAGE ${DISTOPIA_SIMD_FLAGS})
+  message(STATUS "${Cyan}SIMD FLAGS are ${CXX_FLAGS}${ColourReset}")
 endif()
 
 
-
-#add more and get rid of them as we please
-set(COMPILER_FLAGS)
-set(COMPILER_FLAGS_DEBUG)
-set(COMPILER_FLAGS_RELEASE)
-set(COMPILER_FLAGS_COVERAGE)
-
 # do cross platform compatibility here
 if(CMAKE_CXX_COMPILER_ID MATCHES GNU)
-  if(DISTOPIA_FALLTHROUGH)
-    list(APPEND CXX_FLAGS "-march=native" "-mtune=native")
-  endif()
   list(APPEND CXX_FLAGS "-O3" "-fno-math-errno" "-fno-trapping-math" "-Wno-ignored-attributes")
   list(APPEND CXX_FLAGS_DEBUG  "-g" "-O0" "-Wall"  "-Wextra" )
   list(APPEND CXX_FLAGS_RELEASE "-Wno-unused")
-  list(APPEND CXX_FLAGS_COVERAGE "-g" "-O0" "-Wall"  "-Wextra" "--coverage")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES Clang)
-  if(DISTOPIA_FALLTHROUGH)
-    list(APPEND CXX_FLAGS "-march=native" "-mtune=native")
-  endif()
   list(APPEND CXX_FLAGS "-O3" "-fno-math-errno" "-fno-trapping-math")
   list(APPEND CXX_FLAGS_DEBUG   "-g" "-O0" "-Wall"  "-Wextra")
   list(APPEND CXX_FLAGS_RELEASE "-Wno-unused")
-  list(APPEND CXX_FLAGS_COVERAGE "-g" "-O0" "-Wall"  "-Wextra" "--coverage")
 else()
   message(FATAL_ERROR "${Red}Compiler not supported${ColourReset}")
 endif()
 
 set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage")
 set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} --coverage")
-
-list(APPEND CXX_FLAGS ${DISTOPIA_SIMD_FLAGS})
-list(APPEND CXX_FLAGS_DEBUG ${DISTOPIA_SIMD_FLAGS})
-list(APPEND CXX_FLAGS_RELEASE ${DISTOPIA_SIMD_FLAGS})
-list(APPEND CXX_FLAGS_COVERAGE ${DISTOPIA_SIMD_FLAGS})
-
 
 # add the directory structure 
 set(DISTOPIA_ROOT_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
@@ -346,22 +330,23 @@ include_directories(libdistopia ${DISTOPIA_INCLUDE_DIR})
 include_directories(libdistopia ${DISTOPIA_COMPARE_DIR})
 include_directories(libdistopia ${VCL2_INCLUDE_DIR})
 
+# we just build the library once with all source and our set of SIMD FLAGS
+if(NOT DISTOPIA_DISPATCH)
+  add_library(libdistopia SHARED ${distopia_src})
 
-# # need an object library for each ISA
+# need an object library for each ISA
+elseif(DISTOPIA_DISPATCH)
+  # add the main library
+  add_library(libdistopia SHARED)
+  # avx example
+  add_library(distopia_avx OBJECT ${distopia_src})
+  target_compile_definitions(distopia_avx PRIVATE DISTOPIA_USE_AVX=1)
+  target_link_libraries(libdistopia distopia_avx)
 
-# add_library(distopia_sse OBJECT ${distopia_src})
-# target_compile_definitions(distopia_sse PRIVATE DISTOPIA_USE_SSE1=1)
-
-add_library(distopia_avx OBJECT ${distopia_src})
-target_compile_definitions(distopia_avx PRIVATE DISTOPIA_USE_AVX=1)
-
-# add the main library
-add_library(libdistopia SHARED)
-
-# Link all the dispatch libraries together
-
-# target_link_libraries(libdistopia distopia_sse)
-target_link_libraries(libdistopia distopia_avx)
+else()
+# should never happen but just in case 
+message(FATAL_ERROR "Invalid option combination specified")
+endif()
 
 target_compile_options(libdistopia
   PRIVATE
