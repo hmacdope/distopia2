@@ -222,60 +222,89 @@ if(DISTOPIA_AUTO_SELECT_SIMD)
   set(DISTOPIA_USE_${HIGHEST_SIMD_SUPPORTED} on)  
 endif()
 
+
+set(all_instr
+SSE1  
+SSE2  
+SSE3  
+SSSE3 
+SSE4_1
+SSE4_2
+AVX   
+AVX2  
+AVX512
+)
+
+if(DISTOPIA_DISPATCH_MAX)
+message(STATUS "${Green}DISTOPIA_DISPATCH_MAX selected, setting all instruction sets to ON ${ColourReset}")
+foreach(opt ${all_instr})
+  set(DISTOPIA_USE_${opt} ON)
+endforeach()
+endif()
+
 # choose SIMD and set flags 
 set(DISTOPIA_SIMD_FLAGS)
 
 if(DISTOPIA_USE_SSE1)
   message(STATUS "${Cyan}DISTOPIA SSE1 SELECTED${ColourReset}")
-  list(APPEND DISTOPIA_SIMD_FLAGS "-msse" "-mfma")
+  list(APPEND DISTOPIA_SSE1_SIMD_FLAGS  "-msse" "-mfma")
+  list(APPEND DISTOPIA_SIMD_FLAGS ${DISTOPIA_SSE1_SIMD_FLAGS})
   add_compile_definitions(DISTOPIA_USE_SSE1=1)
 endif()
 
 if(DISTOPIA_USE_SSE2)
   message(STATUS "${Cyan}DISTOPIA SSE2 SELECTED${ColourReset}")
-  list(APPEND DISTOPIA_SIMD_FLAGS "-msse2" "-mfma")
+  list(APPEND DISTOPIA_SSE2_SIMD_FLAGS "-msse2" "-mfma")
+  list(APPEND DISTOPIA_SIMD_FLAGS ${DISTOPIA_SSE2_SIMD_FLAGS})
   add_compile_definitions(DISTOPIA_USE_SSE2=1)
 endif()
 
 if(DISTOPIA_USE_SSE3)
   message(STATUS "${Cyan}DISTOPIA SSE3 SELECTED${ColourReset}")
-  list(APPEND DISTOPIA_SIMD_FLAGS "-msse3" "-mfma")
+  list(APPEND DISTOPIA_SSE3_SIMD_FLAGS "-msse3" "-mfma")
+  list(APPEND DISTOPIA_SIMD_FLAGS ${DISTOPIA_SSE3_SIMD_FLAGS})
   add_compile_definitions(DISTOPIA_USE_SSE3=1)
 endif()
 
 if(DISTOPIA_USE_SSSE3)
   message(STATUS "${Cyan}DISTOPIA SSSE3 SELECTED${ColourReset}")
-  list(APPEND DISTOPIA_SIMD_FLAGS "-mssse3" "-mfma")
+  list(APPEND DISTOPIA_SSSE3_SIMD_FLAGS "-mssse3" "-mfma")
+  list(APPEND DISTOPIA_SIMD_FLAGS ${DISTOPIA_SSSE3_SIMD_FLAGS})
   add_compile_definitions(DISTOPIA_USE_SSSE3=1)
 endif()
 
 if(DISTOPIA_USE_SSE4_1 AND SSE4_1_SUPPORTED)
   message(STATUS "${Cyan}DISTOPIA SSE4_1 SELECTED${ColourReset}")
-  list(APPEND DISTOPIA_SIMD_FLAGS "-msse4.1" "-mfma")
+  list(APPEND DISTOPIA_SSE4_1_SIMD_FLAGS "-msse4.1" "-mfma")
+  list(APPEND DISTOPIA_SIMD_FLAGS ${DISTOPIA_SSE4_1_SIMD_FLAGS})
   add_compile_definitions(DISTOPIA_USE_SSE4_1=1)
 endif()
 
 if(DISTOPIA_USE_SSE4_2)
   message(STATUS "${Cyan}DISTOPIA SSE4_2 SELECTED${ColourReset}")
-  list(APPEND DISTOPIA_SIMD_FLAGS "-msse4.2"  "-mfma")
+  list(APPEND DISTOPIA_SSE4_2_SIMD_FLAGS "-msse4.2" "-mfma")
+  list(APPEND DISTOPIA_SIMD_FLAGS ${DISTOPIA_SSE4_2_SIMD_FLAGS})
   add_compile_definitions(DISTOPIA_USE_SSE4_2=1)
 endif()
 
 if(DISTOPIA_USE_AVX)
   message(STATUS "${Cyan}DISTOPIA AVX SELECTED${ColourReset}")
-  list(APPEND DISTOPIA_SIMD_FLAGS "-mavx"  "-mfma")
+  list(APPEND DISTOPIA_AVX_SIMD_FLAGS "-mavx"  "-mfma")
+  list(APPEND DISTOPIA_SIMD_FLAGS ${DISTOPIA_AVX_SIMD_FLAGS})
   add_compile_definitions(DISTOPIA_USE_AVX=1)
 endif()
 
 if(DISTOPIA_USE_AVX2)
   message(STATUS "${Cyan}DISTOPIA AVX2 SELECTED${ColourReset}")
-  list(APPEND DISTOPIA_SIMD_FLAGS "-mavx2"  "-mfma")
+  list(APPEND DISTOPIA_AVX2_SIMD_FLAGS "-mavx2"  "-mfma")
+  list(APPEND DISTOPIA_SIMD_FLAGS ${DISTOPIA_AVX2_SIMD_FLAGS})
   add_compile_definitions(DISTOPIA_USE_AVX2=1)
 endif()
 
 if(DISTOPIA_USE_AVX512)
   message(STATUS "${Cyan}DISTOPIA AVX512 SELECTED${ColourReset}")
-  list(APPEND DISTOPIA_SIMD_FLAGS "-mavx512" "-mfma") # note that this is a bit platform specific
+  list(APPEND DISTOPIA_AVX512_SIMD_FLAGS "-mavx512" "-mfma") # note that this is a bit platform specific
+  list(APPEND DISTOPIA_SIMD_FLAGS ${DISTOPIA_AVX512_SIMD_FLAGS}) # note that this is a bit platform specific
   add_compile_definitions(DISTOPIA_USE_AVX512=1)
 endif()
 
@@ -291,7 +320,6 @@ message(STATUS "${Green}DISTOPIA_DISPATCH is OFF. Are we using march and mtune f
     list(APPEND CXX_FLAGS ${DISTOPIA_SIMD_FLAGS})
     list(APPEND CXX_FLAGS_DEBUG ${DISTOPIA_SIMD_FLAGS})
     list(APPEND CXX_FLAGS_RELEASE ${DISTOPIA_SIMD_FLAGS})
-    list(APPEND CXX_FLAGS_COVERAGE ${DISTOPIA_SIMD_FLAGS})
     message(STATUS "${Cyan}SIMD FLAGS are ${CXX_FLAGS}${ColourReset}")
   endif()
 endif()
@@ -310,8 +338,6 @@ else()
   message(FATAL_ERROR "${Red}Compiler not supported${ColourReset}")
 endif()
 
-set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage")
-set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} --coverage")
 
 # add the directory structure 
 set(DISTOPIA_ROOT_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
@@ -339,12 +365,28 @@ if(NOT DISTOPIA_DISPATCH)
 
 # need an object library for each ISA
 elseif(DISTOPIA_DISPATCH)
+  message(STATUS "${Magenta}Creating targets for dispatch${ColourReset}")
   # add the main library
   add_library(libdistopia SHARED)
-  # avx example
-  add_library(distopia_avx OBJECT ${distopia_src})
-  target_compile_definitions(distopia_avx PRIVATE DISTOPIA_USE_AVX=1)
-  target_link_libraries(libdistopia distopia_avx)
+
+  foreach(opt ${all_instr})
+    if(DISTOPIA_USE_${opt})
+      message(STATUS "${Magenta}Creating dispatch target for ${opt} target name distopia_${opt}${ColourReset}")
+      add_library(distopia_${opt} OBJECT ${distopia_src})
+      if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+        # target_compile_options(distopia_${opt} PRIVATE  $<$<CONFIG:Debug>:${DISTOPIA_${opt}_SIMD_FLAGS})
+      endif()
+      if (CMAKE_BUILD_TYPE EQUAL "RELEASE")
+        # target_compile_options(distopia_${opt} PRIVATE  $<$<CONFIG:Release>:${DISTOPIA_${opt}_SIMD_FLAGS})
+      endif()
+      target_compile_definitions(distopia_${opt} PRIVATE DISTOPIA_USE_${opt}=1)
+      target_link_libraries(libdistopia distopia_${opt})
+    else()
+      message(STATUS "${Yellow}Dispatch inactive for ${opt} ${ColourReset}")
+    endif()
+  endforeach()
+
+
 
 else()
 # should never happen but just in case 
@@ -356,7 +398,6 @@ target_compile_options(libdistopia
     ${CXX_FLAGS}
     "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
     "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
-    "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
   )
 
 if(DISTOPIA_BUILD_TEST)
@@ -373,7 +414,6 @@ if(DISTOPIA_BUILD_TEST)
       ${CXX_FLAGS}
       "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
       "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
-      "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
     )
   target_link_libraries(unit_tests libdistopia)
   target_link_libraries(unit_tests gtest gtest_main)
@@ -387,7 +427,6 @@ if(DISTOPIA_BUILD_TEST)
       ${CXX_FLAGS}
       "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
       "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
-      "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
     )
   target_link_libraries(test_matches libdistopia)
   target_link_libraries(test_matches gtest gtest_main)
@@ -406,13 +445,12 @@ if(DISTOPIA_BUILD_TIMINGS)
   add_subdirectory(${DISTOPIA_TEST_DIR}/googlebench)
 
   # googlebench executable
-  add_executable(benchmarks ${DISTOPIA_TEST_DIR}/benchmark.cpp)
+  add_executable(benchmarks ${DISTOPIA_TEST_DIR}/benchmark.cpp) 
   target_compile_options(benchmarks
   PRIVATE
     ${CXX_FLAGS}
     "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
     "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
-    "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
   )
   target_link_libraries(benchmarks libdistopia)
   target_link_libraries(benchmarks benchmark::benchmark)
