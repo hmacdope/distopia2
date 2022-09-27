@@ -5,7 +5,6 @@
 // fix to non-relative
 #include "../compare/distancekernels.h"
 #include "../include/distopia.h"
-#include "../lib/calc_bonds.h"
 #include "../compare/vanilla.h"
 #include "test_utils.h"
 
