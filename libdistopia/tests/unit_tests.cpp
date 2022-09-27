@@ -8,7 +8,6 @@
 
 #include "../include/distopia.h"
 #include "../lib/box.h"
-#include "../lib/calc_bonds.h"
 #include "../lib/simd_swizzles.h"
 #include "../lib/vector_triple.h"
 

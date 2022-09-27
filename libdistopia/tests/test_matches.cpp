@@ -9,7 +9,6 @@
 #include "../compare/calc_distances.h"
 #include "../compare/vanilla.h"
 #include "../include/distopia.h"
-#include "../lib/calc_bonds.h"
 
 // constants
 constexpr int BOXSIZE = 10;
