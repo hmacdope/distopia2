@@ -371,14 +371,9 @@ elseif(DISTOPIA_DISPATCH)
 
   foreach(opt ${all_instr})
     if(DISTOPIA_USE_${opt})
-      message(STATUS "${Magenta}Creating dispatch target for ${opt} target name distopia_${opt}${ColourReset}")
+      message(STATUS "${Magenta}Creating dispatch target for ${opt} target name distopia_${opt} with flags ${DISTOPIA_${opt}_SIMD_FLAGS} ${ColourReset}")
       add_library(distopia_${opt} OBJECT ${distopia_src})
-      if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
-        # target_compile_options(distopia_${opt} PRIVATE  $<$<CONFIG:Debug>:${DISTOPIA_${opt}_SIMD_FLAGS})
-      endif()
-      if (CMAKE_BUILD_TYPE EQUAL "RELEASE")
-        # target_compile_options(distopia_${opt} PRIVATE  $<$<CONFIG:Release>:${DISTOPIA_${opt}_SIMD_FLAGS})
-      endif()
+      target_compile_options(distopia_${opt} PUBLIC ${DISTOPIA_${opt}_SIMD_FLAGS})
       target_compile_definitions(distopia_${opt} PRIVATE DISTOPIA_USE_${opt}=1)
       target_link_libraries(libdistopia distopia_${opt})
     else()
@@ -446,6 +441,7 @@ if(DISTOPIA_BUILD_TIMINGS)
 
   # googlebench executable
   add_executable(benchmarks ${DISTOPIA_TEST_DIR}/benchmark.cpp) 
+  list(APPEND CXX_FLAGS "-msse3" "-mfma")
   target_compile_options(benchmarks
   PRIVATE
     ${CXX_FLAGS}
