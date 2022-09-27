@@ -281,14 +281,6 @@ include_directories(libdistopia ${DISTOPIA_COMPARE_DIR})
 include_directories(libdistopia ${VCL2_INCLUDE_DIR})
 add_library(libdistopia SHARED ${distopia_src})
 
-target_compile_options(libdistopia
-  PRIVATE
-    ${CXX_FLAGS}
-    "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
-    "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
-    "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
-  )
-
 if(DISTOPIA_BUILD_TEST)
   # add googletest
   Include(GoogleTest)
@@ -298,13 +290,6 @@ if(DISTOPIA_BUILD_TEST)
   # add test executable for internals
   add_executable(unit_tests ${DISTOPIA_TEST_DIR}/unit_tests.cpp)
   target_include_directories(unit_tests PRIVATE ${DISTOPIA_SOURCE_DIR})
-  target_compile_options(unit_tests
-    PRIVATE
-      ${CXX_FLAGS}
-      "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
-      "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
-      "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
-    )
   target_link_libraries(unit_tests libdistopia)
   target_link_libraries(unit_tests gtest gtest_main)
 
@@ -312,13 +297,6 @@ if(DISTOPIA_BUILD_TEST)
   gtest_discover_tests(unit_tests WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
   add_executable(test_matches  ${DISTOPIA_TEST_DIR}/test_matches.cpp)
-  target_compile_options(test_matches
-    PRIVATE
-      ${CXX_FLAGS}
-      "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
-      "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
-      "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
-    )
   target_link_libraries(test_matches libdistopia)
   target_link_libraries(test_matches gtest gtest_main)
   # discover tests so that make test will work
@@ -337,13 +315,6 @@ if(DISTOPIA_BUILD_TIMINGS)
 
   # googlebench executable
   add_executable(benchmarks ${DISTOPIA_TEST_DIR}/benchmark.cpp)
-  target_compile_options(benchmarks
-  PRIVATE
-    ${CXX_FLAGS}
-    "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
-    "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
-    "$<$<CONFIG:Coverage>:${CXX_FLAGS_COVERAGE}>"
-  )
   target_link_libraries(benchmarks libdistopia)
   target_link_libraries(benchmarks benchmark::benchmark)
 endif()
@@ -351,7 +322,7 @@ endif()
 set_target_properties(libdistopia
         PROPERTIES PUBLIC_HEADER ${DISTOPIA_ROOT_SOURCE_DIR}/libdistopia/include/distopia.h)
 
-# cmake will append the name lib already , avoid liblibdistopia
+# cmake will append the name lib already, avoid liblibdistopia
 set_target_properties(libdistopia PROPERTIES OUTPUT_NAME distopia)
 
 install(TARGETS libdistopia
