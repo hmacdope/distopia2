@@ -303,7 +303,7 @@ endif()
 
 if(DISTOPIA_USE_AVX512)
   message(STATUS "${Cyan}DISTOPIA AVX512 SELECTED${ColourReset}")
-  list(APPEND DISTOPIA_AVX512_SIMD_FLAGS "-mavx512" "-mfma") # note that this is a bit platform specific
+  list(APPEND DISTOPIA_AVX512_SIMD_FLAGS "-mavx512f" "-mfma") # note that this is a bit platform specific
   list(APPEND DISTOPIA_SIMD_FLAGS ${DISTOPIA_AVX512_SIMD_FLAGS}) # note that this is a bit platform specific
   add_compile_definitions(DISTOPIA_USE_AVX512=1)
 endif()
