@@ -16,7 +16,7 @@
 #ifdef DISTOPIA_DISPATCH
 namespace DISPATCHED_NAMESPACE
 {
-#else
+#else 
 namespace
 {
 #endif // DISTOPIA_DISPATCH
@@ -83,7 +83,7 @@ namespace
     }
 #ifndef DISTOPIA_DISPATCH
 } // anon namespace
-#endif
+#endif // DISTOPIA_DISPATCH
 
 // Dispatching is done here on the templated functions defined in "distopia.h"
 // MaxVectorT<ScalarT> is used to get the largest possible vector for our
@@ -145,7 +145,7 @@ void CalcBondsIdxNoBox(const double *coords, const std::size_t *idxs,
 
 #ifdef DISTOPIA_DISPATCH
 } // DISPATCH_NAMESPACE
-#endif
+#endif // DISTOPIA_DISPATCH
 
 
 #endif // DISTOPIA_CALC_BONDS_H

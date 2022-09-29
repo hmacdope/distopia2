@@ -11,7 +11,7 @@
 #ifdef DISTOPIA_DISPATCH
 namespace DISPATCHED_NAMESPACE
 {
-#endif
+#endif // DISTOPIA_DISPATCH
 
 /*! \file 
     \brief Main public header for distopia
@@ -80,6 +80,6 @@ void CalcBondsIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
 
 #ifdef DISTOPIA_DISPATCH
 } // DISPATCHED_NAMESPACE
-#endif
+#endif // DISTOPIA_DISPATCH
 
 #endif // DISTOPIA_H
