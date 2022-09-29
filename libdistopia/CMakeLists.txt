@@ -351,8 +351,7 @@ set(DISTOPIA_COMPARE_DIR ${CMAKE_CURRENT_LIST_DIR}/compare)
 
 #find all the files
 file(GLOB distopia_src ${DISTOPIA_SRC_DIR}/*.cpp )
-file(GLOB compare_src ${DISTOPIA_COMPARE_DIR}/*.cpp )
-list (APPEND distopia_src ${compare_src})
+
 
 
 include_directories(libdistopia ${DISTOPIA_INCLUDE_DIR})
@@ -403,7 +402,9 @@ if(DISTOPIA_BUILD_TEST)
   enable_testing()
   include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
   # add test executable for internals
-  add_executable(unit_tests ${DISTOPIA_TEST_DIR}/unit_tests.cpp)
+  file(GLOB tests_src ${DISTOPIA_COMPARE_DIR}/*.cpp )
+  list (APPEND tests_src ${DISTOPIA_TEST_DIR}/unit_tests.cpp)
+  add_executable(unit_tests ${tests_src})
   target_include_directories(unit_tests PRIVATE ${DISTOPIA_SOURCE_DIR})
   target_compile_options(unit_tests
     PRIVATE
@@ -441,7 +442,9 @@ if(DISTOPIA_BUILD_TIMINGS)
   add_subdirectory(${DISTOPIA_TEST_DIR}/googlebench)
 
   # googlebench executable
-  add_executable(benchmarks ${DISTOPIA_TEST_DIR}/benchmark.cpp) 
+  file(GLOB benchmarks_src ${DISTOPIA_COMPARE_DIR}/*.cpp )
+  list (APPEND benchmarks_src ${DISTOPIA_TEST_DIR}/benchmark.cpp)
+  add_executable(benchmarks ${benchmarks_src}) 
   list(APPEND CXX_FLAGS "-msse3" "-mfma")
   target_compile_options(benchmarks
   PRIVATE
