@@ -8,8 +8,18 @@
 #include "vectorclass.h"
 #include "vector_triple.h"
 
+#ifdef DISTOPIA_DISPATCH
+#include "simd_dispatch.h"
+#endif
+
+
+#ifdef DISTOPIA_DISPATCH
+namespace DISPATCHED_NAMESPACE
+{
+#else
 namespace
 {
+#endif // DISTOPIA_DISPATCH
 
     template <typename VectorT, typename BoxT>
     void CalcBondsInner(const VectorToScalarT<VectorT> *coords0,
@@ -71,8 +81,9 @@ namespace
             b_j += 2 * ValuesPerPack<VectorT>;
         }
     }
-
-}
+#ifndef DISTOPIA_DISPATCH
+} // anon namespace
+#endif
 
 // Dispatching is done here on the templated functions defined in "distopia.h"
 // MaxVectorT<ScalarT> is used to get the largest possible vector for our
@@ -131,5 +142,10 @@ void CalcBondsIdxNoBox(const double *coords, const std::size_t *idxs,
 {
     CalcBondsIdxInner<MaxVectorT<double>, NoBox<MaxVectorT<double>>>(coords, idxs, nullptr, n, out);
 }
+
+#ifdef DISTOPIA_DISPATCH
+} // DISPATCH_NAMESPACE
+#endif
+
 
 #endif // DISTOPIA_CALC_BONDS_H

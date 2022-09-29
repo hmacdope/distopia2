@@ -3,6 +3,15 @@
 
 #include <cstddef>
 
+#ifdef DISTOPIA_DISPATCH
+#include "simd_dispatch.h"
+#endif
+
+
+#ifdef DISTOPIA_DISPATCH
+namespace DISPATCHED_NAMESPACE
+{
+#endif
 
 /*! \file 
     \brief Main public header for distopia
@@ -67,5 +76,10 @@ void CalcBondsIdxOrtho(const T *coords, const std::size_t *idxs, const T *box,
 template <typename T>
 void CalcBondsIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
                        T *out);
+
+
+#ifdef DISTOPIA_DISPATCH
+} // DISPATCHED_NAMESPACE
+#endif
 
 #endif // DISTOPIA_H
