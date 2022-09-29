@@ -1,6 +1,8 @@
 #ifndef DISTOPIA_H
 #define DISTOPIA_H
 
+#include <cstddef>
+
 
 /*! \file 
     \brief Main public header for distopia
