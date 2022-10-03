@@ -3,7 +3,7 @@
 
 #ifdef DISTOPIA_DISPATCH // active only if we compile for dispatch
 
-#include "vectorclass.h"
+#include "../../vcl2/vectorclass.h"
 
 // Choose namespace name depending on which instruction set we compile for.
 
