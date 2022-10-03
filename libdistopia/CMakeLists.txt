@@ -344,6 +344,7 @@ set(DISTOPIA_COMPARE_DIR ${CMAKE_CURRENT_LIST_DIR}/compare)
 
 #find all the files
 file(GLOB distopia_src ${DISTOPIA_SRC_DIR}/*.cpp )
+file(GLOB vcl_src ${VCL2_INCLUDE_DIR}/instrset_detect.cpp)
 
 
 
@@ -364,11 +365,19 @@ elseif(DISTOPIA_DISPATCH)
   foreach(opt ${all_instr})
     if(DISTOPIA_USE_${opt})
       message(STATUS "${Magenta}Creating dispatch target for ${opt} target name distopia_${opt} with flags ${DISTOPIA_${opt}_SIMD_FLAGS} ${ColourReset}")
+      if(${opt} STREQUAL SSE1)
+       list(APPEND  distopia_src ${vcl_src})
+        message(STATUS "${Magenta}Appending nessecary VCL sources for target=distopia_${opt}${ColourReset}")
+      endif()
       add_library(distopia_${opt} OBJECT ${distopia_src})
       target_compile_options(distopia_${opt} PUBLIC ${DISTOPIA_${opt}_SIMD_FLAGS})
       target_compile_definitions(distopia_${opt} PRIVATE DISTOPIA_USE_${opt}=1)
       target_compile_definitions(distopia_${opt} PUBLIC DISTOPIA_DISPATCH=1)
       target_link_libraries(libdistopia distopia_${opt})
+    if(${opt} STREQUAL SSE1)
+       list(REMOVE_ITEM  distopia_src ${vcl_src})
+       message(STATUS "${Magenta}Removing nessecary VCL sources for target=distopia_${opt}${ColourReset}")
+     endif()
     else()
       message(STATUS "${Yellow}Dispatch inactive for ${opt} ${ColourReset}")
     endif()

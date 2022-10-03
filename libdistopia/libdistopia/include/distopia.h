@@ -7,6 +7,10 @@
 #include "simd_dispatch.h"
 #endif
 
+// Note on namespacing in this file. If library is built for NOT built for
+// dispatch need only one definition if built FOR dispatch need two, a namespaced
+// version and a non-namespaced version
+
 
 #if DISTOPIA_DISPATCH
 namespace DISPATCHED_NAMESPACE
@@ -80,7 +84,7 @@ void CalcBondsIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
 
 #if DISTOPIA_DISPATCH
 } // DISPATCHED_NAMESPACE
-#endif // DISTOPIA_DISPATCH
+
 
 /*! \file 
     \brief Main public header for distopia
@@ -146,5 +150,5 @@ template <typename T>
 void CalcBondsIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
                        T *out);
 
-
+#endif // DISTOPIA_DISPATCH
 #endif // DISTOPIA_H

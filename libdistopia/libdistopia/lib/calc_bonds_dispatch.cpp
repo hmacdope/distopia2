@@ -1,10 +1,10 @@
 #if DISTOPIA_DISPATCH // active only if we compile for dispatch
 #if DISTOPIA_USE_SSE1 // only in lowest SIMD version
 
-#include "simd_dispatch.h"
-#include "../../vcl2/vectorclass.h"
-#include "../../vcl2/instrset.h"
+
 #include "../include/distopia.h"
+#include "simd_dispatch.h"
+#include "vectorclass.h"
 
 #include <cstddef>
 #include <iostream>
@@ -208,11 +208,6 @@ void CalcBondsOrthoDispatchD(const double *coords0, const double *coords1,
 // The first time this function is called, it goes through the dispatcher.
 // The dispatcher will change the function pointer so that all subsequent
 // calls go directly to the optimal version of the entry function
-
-template <typename T>
-void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
-                    std::size_t n, T *out);
-
 template <>
 void CalcBondsOrtho(const float *coords0, const float *coords1,
                     const float *box, std::size_t n, float *out)
