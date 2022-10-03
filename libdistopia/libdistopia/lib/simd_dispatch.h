@@ -2,7 +2,6 @@
 #define DISTOPIA_SIMD_DISPATCH_H
 
 #if DISTOPIA_DISPATCH // active only if we compile for dispatch
-#include "vectorclass.h"
 
 // define so we can check mutual exclusivity
 #ifndef DISTOPIA_USE_SSE1
