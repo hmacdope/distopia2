@@ -51,7 +51,6 @@ namespace Ns_AVX512{
 CalcBondsOrthoFT *CalcBondsOrthoF_pointer = &CalcBondsOrthoDispatch; // function pointer
 
 
-
 // Dispatch function
 void CalcBondsOrthoDispatch(const float *coords0, const float *coords1,
                     const float *box, std::size_t n, float *out)
@@ -82,20 +81,21 @@ void CalcBondsOrthoDispatch(const float *coords0, const float *coords1,
         std::cerr << "Error: Instruction set SSE1 not supported on this computer";
     }
     // continue in the dispatched version of the entry function
-    // *CalcBondsOrthoF_pointer(coords0, coords1, box, n, out);
+    (*CalcBondsOrthoF_pointer)(coords0, coords1, box, n, out);
+
 }
 
 
 
-// // Call the entry function through the function pointer.
-// // // The first time this function is called, it goes through the dispatcher.
-// // // The dispatcher will change the function pointer so that all subsequent
-// // // calls go directly to the optimal version of the entry function
-// // inline float myfunc(float const f[])
-// // {
-// //     return (*myfunc_pointer)(f); // go to dispatched version
-// // }
-// #endif // INSTRSET == 2
+// Call the entry function through the function pointer.
+// The first time this function is called, it goes through the dispatcher.
+// The dispatcher will change the function pointer so that all subsequent
+// calls go directly to the optimal version of the entry function
+void CalcBondsOrtho(const float *coords0, const float *coords1,
+                    const float *box, std::size_t n, float *out)
+{
+    (*CalcBondsOrthoF_pointer)(coords0, coords1, box, n, out); // go to dispatched version
+}
 
 #endif // DISTOPIA_USE_SSE1
 #endif // DISTOPIA_DISPATCH
