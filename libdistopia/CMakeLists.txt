@@ -408,20 +408,20 @@ if(DISTOPIA_BUILD_TEST)
   target_link_libraries(unit_tests libdistopia)
   target_link_libraries(unit_tests gtest gtest_main)
 
-  # discover tests so that make test will work
-  gtest_discover_tests(unit_tests WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+  # # discover tests so that make test will work
+  # gtest_discover_tests(unit_tests WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
-  add_executable(test_matches  ${DISTOPIA_TEST_DIR}/test_matches.cpp)
-  target_compile_options(test_matches
-    PRIVATE
-      ${CXX_FLAGS}
-      "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
-      "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
-    )
-  target_link_libraries(test_matches libdistopia)
-  target_link_libraries(test_matches gtest gtest_main)
-  # discover tests so that make test will work
-  gtest_discover_tests(test_matches WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+  # add_executable(test_matches  ${DISTOPIA_TEST_DIR}/test_matches.cpp)
+  # target_compile_options(test_matches
+  #   PRIVATE
+  #     ${CXX_FLAGS}
+  #     "$<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>"
+  #     "$<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>"
+  #   )
+  # target_link_libraries(test_matches libdistopia)
+  # target_link_libraries(test_matches gtest gtest_main)
+  # # discover tests so that make test will work
+  # gtest_discover_tests(test_matches WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 endif()
 
