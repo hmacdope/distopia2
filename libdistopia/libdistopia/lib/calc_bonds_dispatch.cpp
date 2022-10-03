@@ -222,12 +222,6 @@ void CalcBondsOrtho(const double *coords0, const double *coords1,
     (*CalcBondsOrthoD_pointer)(coords0, coords1, box, n, out); // go to dispatched version
 }
 
-// explicitly instantiate 
-template void CalcBondsOrtho<float>(const float *coords0, const float *coords1,
-                    const float *box, std::size_t n, float *out);
-template void CalcBondsOrtho<double>(const double *coords0, const double *coords1,
-                    const double *box, std::size_t n, double *out);
-
 
 #endif // DISTOPIA_USE_SSE1
 #endif // DISTOPIA_DISPATCH
