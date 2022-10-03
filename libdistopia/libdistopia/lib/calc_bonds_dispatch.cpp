@@ -4,15 +4,12 @@
 #define DEBUG_DISPATCH 0
 
 #include "../include/distopia.h"
-#include "dispatch_helpers.h"
+#include "calc_bonds_dispatch.h"
 #include "simd_dispatch.h"
 #include "vectorclass.h"
 
 #include <cstddef>
 #include <iostream>
-
-CalcBondsOrthoFT CalcBondsOrtho, CalcBondsOrthoDispatchF;
-CalcBondsOrthoDT CalcBondsOrtho, CalcBondsOrthoDispatchD;
 
 // global simd config
 constexpr simd_config _SIMD_config = simd_config();
