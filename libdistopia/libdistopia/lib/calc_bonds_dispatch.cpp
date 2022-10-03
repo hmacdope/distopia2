@@ -15,8 +15,8 @@
 constexpr simd_config _SIMD_config = simd_config();
 
 // helper stuff
-auto *CalcBondsOrthoF_pointer = &CalcBondsOrthoDispatchF; // function pointer
-auto *CalcBondsOrthoD_pointer = &CalcBondsOrthoDispatchD; // function pointer
+auto CalcBondsOrthoF_pointer = &CalcBondsOrthoDispatchF; // function pointer
+auto CalcBondsOrthoD_pointer = &CalcBondsOrthoDispatchD; // function pointer
 
 // Dispatch function
 // branches are on _SIMD_config are constexpr so should be trimmed nicely
