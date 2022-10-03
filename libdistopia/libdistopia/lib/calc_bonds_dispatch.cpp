@@ -90,75 +90,83 @@ CalcBondsOrthoFT *CalcBondsOrthoF_pointer = &CalcBondsOrthoDispatchF; // functio
 CalcBondsOrthoDT *CalcBondsOrthoD_pointer = &CalcBondsOrthoDispatchD; // function pointer
 
 // Dispatch function
+// branches are on _SIMD_config are constexpr so should be trimmed nicely
+// by the compiler
 void CalcBondsOrthoDispatchF(const float *coords0, const float *coords1,
                             const float *box, std::size_t n, float *out)
 {
     printf("function dispatch: float\n");
+    printf("SIMDAVX512 %i\n",_SIMD_config.has_AVX512);
+    printf("SIMDAVX2 %i\n",_SIMD_config.has_AVX2);
+    printf("SIMDAVX %i\n",_SIMD_config.has_AVX);
+    printf("SIMDSSE3 %i\n",_SIMD_config.has_SSE3);
+    printf("SIMDSSE1 %i\n",_SIMD_config.has_SSE1);
+
     int iset = instrset_detect(); // Detect supported instruction set
     // Choose which version of the entry function we want to point to:
 
-    printf("ISET: %i", iset);
-    if ((iset >= 9) & (_SIMD_config.has_AVX512))
+    printf("ISET: %i\n", iset);
+    if (iset >= 9 && _SIMD_config.has_AVX512)
     {
-        #if DISTOPIA_USE_AVX512
+        #if DISTOPIA_AVX512_AVAILABLE
         printf("\nRuntime dispatch AVX512\n");
         CalcBondsOrthoF_pointer = &Ns_AVX512::CalcBondsOrtho; // AVX512
         #endif
 
     }
-    else if  ((iset >= 9) & (_SIMD_config.has_AVX2))
+    else if  (iset >= 8 && _SIMD_config.has_AVX2)
     {
-        #if DISTOPIA_USE_AVX2
+        #if DISTOPIA_AVX2_AVAILABLE
         printf("\nRuntime dispatch AVX2\n");
         CalcBondsOrthoF_pointer = &Ns_AVX2::CalcBondsOrtho; // AVX2
         #endif
     }
-    else if ((iset >= 7) & (_SIMD_config.has_AVX))
+    else if (iset >= 7 && _SIMD_config.has_AVX)
     {
-        #if DISTOPIA_USE_AVX
+       // #if DISTOPIA_AVX_AVAILBLE
         printf("\nRuntime dispatch AVX\n");
         CalcBondsOrthoF_pointer = &Ns_AVX::CalcBondsOrtho; // AVX
-        #endif
+       //#endif
     }
-    else if ((iset >= 6) & (_SIMD_config.has_SSE4_2))
+    else if (iset >= 6 && _SIMD_config.has_SSE4_2)
     {
-        #if DISTOPIA_USE_SSE4_2
+        #if DISTOPIA_SSE4_2_AVAILABLE
         printf("\nRuntime dispatch SSE4.2\n");
         CalcBondsOrthoF_pointer = &Ns_SSE4_2::CalcBondsOrtho; // SSE4.2
         #endif
     }
-    else if ((iset >= 5) & (_SIMD_config.has_SSE4_1))
+    else if (iset >= 5 && _SIMD_config.has_SSE4_1)
     {
-        #if DISTOPIA_USE_SSE4_1
+        #if DISTOPIA_SSE4_1_AVAILABLE
         printf("\nRuntime dispatch SSE4.1\n");
         CalcBondsOrthoF_pointer = &Ns_SSE4_1::CalcBondsOrtho; // SSE4.1
         #endif
     }
-    else if ((iset >= 4) & (_SIMD_config.has_SSSE3))
+    else if (iset >= 4 && _SIMD_config.has_SSSE3)
     {
-        #if DISTOPIA_USE_SSSE3
+        #if DISTOPIA_SSSE3_AVAILABLE
         printf("\nRuntime dispatch SSSE3\n");
         CalcBondsOrthoF_pointer = &Ns_SSSE3::CalcBondsOrtho; // SSSE3
         #endif
     }
-    else if ((iset >= 3) & (_SIMD_config.has_SSE3))
+    else if (iset >= 3 && _SIMD_config.has_SSE3)
     {
-        #if DISTOPIA_USE_SSE3 
+        #if DISTOPIA_SSE3_AVAILABLE 
         printf("\nRuntime dispatch SSE3\n");
         CalcBondsOrthoF_pointer = &Ns_SSE3::CalcBondsOrtho; // SSE3
         #endif
     }
-    else if ((iset >= 2) & (_SIMD_config.has_SSE2))
+    else if (iset >= 2 && _SIMD_config.has_SSE2)
     {
-        #if DISTOPIA_USE_SSE2 
+        #if DISTOPIA_SSE2_AVAILABLE 
         printf("\nRuntime dispatch SSE2\n");
         CalcBondsOrthoF_pointer = &Ns_SSE2::CalcBondsOrtho; // SSE2
         #endif
     }
-    else if ((iset >= 1) & (_SIMD_config.has_SSE1))
+    else if (iset >= 1 && _SIMD_config.has_SSE1)
     {
         // this should always be the case
-        #if DISTOPIA_USE_SSE1
+        #if DISTOPIA_SSE1_AVAILABLE
         printf("\nRuntime dispatch SSE1\n");
         CalcBondsOrthoF_pointer = &Ns_SSE1::CalcBondsOrtho; // SSE1
         #endif
@@ -175,55 +183,72 @@ void CalcBondsOrthoDispatchD(const double *coords0, const double *coords1,
     printf("function dispatch: double\n");
     int iset = instrset_detect(); // Detect supported instruction set
     // Choose which version of the entry function we want to point to:
-    if (iset >= 9)
+
+    printf("ISET: %i", iset);
+    if ((iset >= 9) && (_SIMD_config.has_AVX512))
     {
+        #if DISTOPIA_AVX512_AVAILABLE
         printf("\nRuntime dispatch AVX512\n");
         CalcBondsOrthoD_pointer = &Ns_AVX512::CalcBondsOrtho; // AVX512
+        #endif
+
     }
-    else if (iset >= 8)
+    else if  ((iset >= 8) && (_SIMD_config.has_AVX2))
     {
+        #if DISTOPIA_AVX2_AVAILABLE
         printf("\nRuntime dispatch AVX2\n");
         CalcBondsOrthoD_pointer = &Ns_AVX2::CalcBondsOrtho; // AVX2
+        #endif
     }
-    else if (iset >= 7)
+    else if ((iset >= 7) && (_SIMD_config.has_AVX))
     {
+        #if DISTOPIA_AVX_AVAILBLE
         printf("\nRuntime dispatch AVX\n");
         CalcBondsOrthoD_pointer = &Ns_AVX::CalcBondsOrtho; // AVX
+        #endif
     }
-    else if (iset >= 6)
+    else if ((iset >= 6) && (_SIMD_config.has_SSE4_2))
     {
+        #if DISTOPIA_SSE4_2_AVAILABLE
         printf("\nRuntime dispatch SSE4.2\n");
         CalcBondsOrthoD_pointer = &Ns_SSE4_2::CalcBondsOrtho; // SSE4.2
+        #endif
     }
-    else if (iset >= 5)
+    else if ((iset >= 5) && (_SIMD_config.has_SSE4_1))
     {
+        #if DISTOPIA_SSE4_1_AVAILABLE
         printf("\nRuntime dispatch SSE4.1\n");
         CalcBondsOrthoD_pointer = &Ns_SSE4_1::CalcBondsOrtho; // SSE4.1
+        #endif
     }
-    else if (iset >= 4)
-    {   
+    else if ((iset >= 4) && (_SIMD_config.has_SSSE3))
+    {
+        #if DISTOPIA_SSSE3_AVAILABLE
         printf("\nRuntime dispatch SSSE3\n");
         CalcBondsOrthoD_pointer = &Ns_SSSE3::CalcBondsOrtho; // SSSE3
+        #endif
     }
-    else if (iset >= 3)
+    else if ((iset >= 3) && (_SIMD_config.has_SSE3))
     {
+        #if DISTOPIA_SSE3_AVAILABLE 
         printf("\nRuntime dispatch SSE3\n");
         CalcBondsOrthoD_pointer = &Ns_SSE3::CalcBondsOrtho; // SSE3
+        #endif
     }
-    else if (iset >= 2)
+    else if ((iset >= 2) && (_SIMD_config.has_SSE2))
     {
+        #if DISTOPIA_SSE2_AVAILABLE 
         printf("\nRuntime dispatch SSE2\n");
         CalcBondsOrthoD_pointer = &Ns_SSE2::CalcBondsOrtho; // SSE2
+        #endif
     }
-    else if (iset >= 1)
+    else if ((iset >= 1) && (_SIMD_config.has_SSE1))
     {
+        // this should always be the case
+        #if DISTOPIA_SSE1_AVAILABLE
         printf("\nRuntime dispatch SSE1\n");
         CalcBondsOrthoD_pointer = &Ns_SSE1::CalcBondsOrtho; // SSE1
-    }
-    else
-    {
-        // Error: lowest instruction set not supported.
-        std::cerr << "Error: Minimum instruction set SSE1 not supported on this computer";
+        #endif
     }
     // continue in the dispatched version of the entry function
     (*CalcBondsOrthoD_pointer)(coords0, coords1, box, n, out);
