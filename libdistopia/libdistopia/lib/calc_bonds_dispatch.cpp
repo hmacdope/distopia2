@@ -2,7 +2,8 @@
 #if DISTOPIA_USE_SSE1 // only in lowest SIMD version
 
 #include "simd_dispatch.h"
-#include "vectorclass.h"
+#include "../../vcl2/vectorclass.h"
+#include "../../vcl2/instrset.h"
 #include "../include/distopia.h"
 
 #include <cstddef>
@@ -20,54 +21,63 @@ CalcBondsOrthoDT CalcBondsOrtho, CalcBondsOrthoDispatchD;
 // Define function prototypes
 namespace Ns_SSE1
 {
-    CalcBondsOrthoFT CalcBondsOrtho;
-    CalcBondsOrthoDT CalcBondsOrtho;
+template <typename T>
+void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
+                    std::size_t n, T *out);
 };
 
 namespace Ns_SSE2
 {
-    CalcBondsOrthoFT CalcBondsOrtho;
-    CalcBondsOrthoDT CalcBondsOrtho;
+template <typename T>
+void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
+                    std::size_t n, T *out);
 };
 
 namespace Ns_SSE3
 {
-    CalcBondsOrthoFT CalcBondsOrtho;
-    CalcBondsOrthoDT CalcBondsOrtho;
+template <typename T>
+void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
+                    std::size_t n, T *out);
 };
 
 namespace Ns_SSSE3
 {
-    CalcBondsOrthoFT CalcBondsOrtho;
-    CalcBondsOrthoDT CalcBondsOrtho;
+template <typename T>
+void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
+                    std::size_t n, T *out);
 };
 
 namespace Ns_SSE4_1
 {
-    CalcBondsOrthoFT CalcBondsOrtho;
-    CalcBondsOrthoDT CalcBondsOrtho;
+template <typename T>
+void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
+                    std::size_t n, T *out);
 };
 
 namespace Ns_SSE4_2
 {
-    CalcBondsOrthoFT CalcBondsOrtho;
-    CalcBondsOrthoDT CalcBondsOrtho;
+template <typename T>
+void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
+                    std::size_t n, T *out);
 };
 
 namespace Ns_AVX
 {
-    CalcBondsOrthoFT CalcBondsOrtho;
-    CalcBondsOrthoDT CalcBondsOrtho;
+template <typename T>
+void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
+                    std::size_t n, T *out);
 };
 namespace Ns_AVX2
 {
-    CalcBondsOrthoFT CalcBondsOrtho;
-    CalcBondsOrthoDT CalcBondsOrtho;
+template <typename T>
+void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
+                    std::size_t n, T *out);
 };
 namespace Ns_AVX512
 {
-    CalcBondsOrthoFT CalcBondsOrtho;
-    CalcBondsOrthoDT CalcBondsOrtho;
+template <typename T>
+void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
+                    std::size_t n, T *out);
 };
 
 CalcBondsOrthoFT *CalcBondsOrthoF_pointer = &CalcBondsOrthoDispatchF; // function pointer
@@ -216,6 +226,12 @@ void CalcBondsOrtho(const double *coords0, const double *coords1,
 {
     (*CalcBondsOrthoD_pointer)(coords0, coords1, box, n, out); // go to dispatched version
 }
+
+// explicitly instantiate 
+template void CalcBondsOrtho<float>(const float *coords0, const float *coords1,
+                    const float *box, std::size_t n, float *out);
+template void CalcBondsOrtho<double>(const double *coords0, const double *coords1,
+                    const double *box, std::size_t n, double *out);
 
 
 #endif // DISTOPIA_USE_SSE1
