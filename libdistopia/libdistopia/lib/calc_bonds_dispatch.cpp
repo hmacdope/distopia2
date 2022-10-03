@@ -123,10 +123,10 @@ void CalcBondsOrthoDispatchF(const float *coords0, const float *coords1,
     }
     else if (iset >= 7 && _SIMD_config.has_AVX)
     {
-       // #if DISTOPIA_AVX_AVAILBLE
+       #if DISTOPIA_AVX_AVAILABLE
         printf("\nRuntime dispatch AVX\n");
         CalcBondsOrthoF_pointer = &Ns_AVX::CalcBondsOrtho; // AVX
-       //#endif
+       #endif
     }
     else if (iset >= 6 && _SIMD_config.has_SSE4_2)
     {
@@ -202,7 +202,7 @@ void CalcBondsOrthoDispatchD(const double *coords0, const double *coords1,
     }
     else if ((iset >= 7) && (_SIMD_config.has_AVX))
     {
-        #if DISTOPIA_AVX_AVAILBLE
+        #if DISTOPIA_AVX_AVAILABLE
         printf("\nRuntime dispatch AVX\n");
         CalcBondsOrthoD_pointer = &Ns_AVX::CalcBondsOrtho; // AVX
         #endif
