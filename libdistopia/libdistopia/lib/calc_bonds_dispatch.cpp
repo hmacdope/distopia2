@@ -4,168 +4,22 @@
 #define DEBUG_DISPATCH 0
 
 #include "../include/distopia.h"
+#include "dispatch_helpers.h"
 #include "simd_dispatch.h"
 #include "vectorclass.h"
 
 #include <cstddef>
 #include <iostream>
 
-typedef void CalcBondsOrthoFT(const float *coords0, const float *coords1,
-                              const float *box, std::size_t n, float *out);
-
-typedef void CalcBondsOrthoDT(const double *coords0, const double *coords1,
-                              const double *box, std::size_t n, double *out);
-
 CalcBondsOrthoFT CalcBondsOrtho, CalcBondsOrthoDispatchF;
 CalcBondsOrthoDT CalcBondsOrtho, CalcBondsOrthoDispatchD;
 
 // global simd config
-
 constexpr simd_config _SIMD_config = simd_config();
 
-// Define function prototypes have to manually define them until I find a way to
-// typedef a templated function (possibly with decltype?)
-namespace Ns_SSE1
-{
-    template <typename T>
-    void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
-                        std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsNoBox(const T *coords0, const T *coords1, std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
-                           T *out);
-
-};
-
-namespace Ns_SSE2
-{
-    template <typename T>
-    void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
-                        std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsNoBox(const T *coords0, const T *coords1, std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxOrtho(const T *coords, const std::size_t *idxs, const T *box,
-                           std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
-                           T *out);
-
-};
-
-namespace Ns_SSE3
-{
-    template <typename T>
-    void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
-                        std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsNoBox(const T *coords0, const T *coords1, std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxOrtho(const T *coords, const std::size_t *idxs, const T *box,
-                           std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
-                           T *out);
-
-};
-
-namespace Ns_SSSE3
-{
-    template <typename T>
-    void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
-                        std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsNoBox(const T *coords0, const T *coords1, std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxOrtho(const T *coords, const std::size_t *idxs, const T *box,
-                           std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
-                           T *out);
-
-};
-
-namespace Ns_SSE4_1
-{
-    template <typename T>
-    void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
-                        std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsNoBox(const T *coords0, const T *coords1, std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxOrtho(const T *coords, const std::size_t *idxs, const T *box,
-                           std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
-                           T *out);
-
-};
-
-namespace Ns_SSE4_2
-{
-    template <typename T>
-    void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
-                        std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsNoBox(const T *coords0, const T *coords1, std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxOrtho(const T *coords, const std::size_t *idxs, const T *box,
-                           std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
-                           T *out);
-
-};
-
-namespace Ns_AVX
-{
-    template <typename T>
-    void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
-                        std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsNoBox(const T *coords0, const T *coords1, std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxOrtho(const T *coords, const std::size_t *idxs, const T *box,
-                           std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
-                           T *out);
-
-};
-namespace Ns_AVX2
-{
-    template <typename T>
-    void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
-                        std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsNoBox(const T *coords0, const T *coords1, std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxOrtho(const T *coords, const std::size_t *idxs, const T *box,
-                           std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
-                           T *out);
-
-};
-namespace Ns_AVX512
-{
-    template <typename T>
-    void CalcBondsOrtho(const T *coords0, const T *coords1, const T *box,
-                        std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsNoBox(const T *coords0, const T *coords1, std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxOrtho(const T *coords, const std::size_t *idxs, const T *box,
-                           std::size_t n, T *out);
-    template <typename T>
-    void CalcBondsIdxNoBox(const T *coords, const std::size_t *idxs, std::size_t n,
-                           T *out);
-
-};
-
-CalcBondsOrthoFT *CalcBondsOrthoF_pointer = &CalcBondsOrthoDispatchF; // function pointer
-CalcBondsOrthoDT *CalcBondsOrthoD_pointer = &CalcBondsOrthoDispatchD; // function pointer
+// helper stuff
+auto *CalcBondsOrthoF_pointer = &CalcBondsOrthoDispatchF; // function pointer
+auto *CalcBondsOrthoD_pointer = &CalcBondsOrthoDispatchD; // function pointer
 
 // Dispatch function
 // branches are on _SIMD_config are constexpr so should be trimmed nicely
