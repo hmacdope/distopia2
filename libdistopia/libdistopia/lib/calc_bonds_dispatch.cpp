@@ -9,7 +9,6 @@
 #include "simd_dispatch.h"
 #include "vectorclass.h"
 
-
 #include <cstddef>
 #include <iostream>
 
@@ -18,18 +17,17 @@ constexpr simd_config _SIMD_config = simd_config();
 
 // register for the function pointers
 // initially the function pointers are set to point to the dispatcher
-// in the constructor
+// in the constructor.
 function_pointer_register _DISPATCH_fptr_register = function_pointer_register();
-
 
 //                              CALC_BONDS_ORTHO
 // -----------------------------------------------------------------------------
 
 // branches are on _SIMD_config are constexpr so should be trimmed nicely
 // by the compiler
-template<typename T>
+template <typename T>
 void CalcBondsOrthoDispatch(const T *coords0, const T *coords1,
-                             const T *box, std::size_t n, T *out)
+                            const T *box, std::size_t n, T *out)
 {
     // flag for dispatch pointer float = 0, double = 1
     constexpr int typeflag = DispatchTypeToInt<T>;
@@ -127,7 +125,7 @@ void CalcBondsOrtho(const float *coords0, const float *coords1,
                     const float *box, std::size_t n, float *out)
 {
     // typeflag = 0 , funcflag = 0
-   (*_DISPATCH_fptr_register.get_ptr<0,0>())(coords0, coords1, box, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<0, 0>())(coords0, coords1, box, n, out); // go to dispatched version
 }
 
 template <>
@@ -138,13 +136,12 @@ void CalcBondsOrtho(const double *coords0, const double *coords1,
     (*_DISPATCH_fptr_register.get_ptr<1, 0>())(coords0, coords1, box, n, out); // go to dispatched version
 }
 
-
 //                              CALC_BONDS_NO_BOX
 // -----------------------------------------------------------------------------
 
 // branches on_SIMD_config are constexpr so should be trimmed nicely
 // by the compiler
-template<typename T>
+template <typename T>
 void CalcBondsNoBoxDispatch(const T *coords0, const T *coords1,
                             std::size_t n, T *out)
 {
@@ -244,7 +241,7 @@ void CalcBondsNoBox(const float *coords0, const float *coords1,
                     std::size_t n, float *out)
 {
     // typeflag = 0 , funcflag = 1
-   (*_DISPATCH_fptr_register.get_ptr<0,1>())(coords0, coords1, n, out); // go to dispatched version
+    (*_DISPATCH_fptr_register.get_ptr<0, 1>())(coords0, coords1, n, out); // go to dispatched version
 }
 
 template <>
@@ -254,7 +251,6 @@ void CalcBondsNoBox(const double *coords0, const double *coords1,
     // typeflag = 1 , funcflag = 1
     (*_DISPATCH_fptr_register.get_ptr<1, 1>())(coords0, coords1, n, out); // go to dispatched version
 }
-
 
 #endif // DISTOPIA_USE_SSE1
 #endif // DISTOPIA_DISPATCH

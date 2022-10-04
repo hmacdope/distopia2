@@ -4,6 +4,7 @@
 #include <cstdio>
 #include "distopia_type_traits.h"
 
+// make some typedefs to make life a bit easier
 typedef void CalcBondsOrthoFT(const float *coords0, const float *coords1,
                               const float *box, std::size_t n, float *out);
 
@@ -16,6 +17,8 @@ typedef void CalcBondsNoBoxFT(const float *coords0, const float *coords1,
 typedef void CalcBondsNoBoxDT(const double *coords0, const double *coords1,
                               std::size_t n, double *out);
 
+// declare for the function prototypes to be properly resolved
+// in something like Ns_SSE3::CalcBondsOrtho
 CalcBondsOrthoFT CalcBondsOrtho;
 CalcBondsOrthoDT CalcBondsOrtho;
 
@@ -72,9 +75,9 @@ struct DispatchTypeToFptrTStruct<double, 1>
 {
     using type = CalcBondsNoBox_DptrT;
 };
-
+// define the actual trait
 template <typename T, int selectFunc>
-using DispatchTypeToFptrT = typename DispatchTypeToFptrTStruct<T,selectFunc>::type;
+using DispatchTypeToFptrT = typename DispatchTypeToFptrTStruct<T, selectFunc>::type;
 
 // function pointer registry
 //--------------------------
@@ -100,7 +103,8 @@ public:
 
     function_pointer_register()
     {
-        // CRITICAL, set the function pointer to initially point to dispatcher
+        // CRITICAL, set the function pointer to initially point to DISPATCHER
+        // which we declared (but not defined) above
         CalcBondsOrtho_Fptr = &CalcBondsOrthoDispatch<float>;
         CalcBondsOrtho_Dptr = &CalcBondsOrthoDispatch<double>;
         CalcBondsNoBox_Fptr = &CalcBondsNoBoxDispatch<float>;
