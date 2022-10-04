@@ -4,27 +4,6 @@
 #include <cstdio>
 #include "distopia_type_traits.h"
 
-// make some typedefs to make life a bit easier
-typedef void CalcBondsOrthoFT(const float *coords0, const float *coords1,
-                              const float *box, std::size_t n, float *out);
-
-typedef void CalcBondsOrthoDT(const double *coords0, const double *coords1,
-                              const double *box, std::size_t n, double *out);
-
-typedef void CalcBondsNoBoxFT(const float *coords0, const float *coords1,
-                              std::size_t n, float *out);
-
-typedef void CalcBondsNoBoxDT(const double *coords0, const double *coords1,
-                              std::size_t n, double *out);
-
-// declare for the function prototypes to be properly resolved
-// in something like Ns_SSE3::CalcBondsOrtho
-CalcBondsOrthoFT CalcBondsOrtho;
-CalcBondsOrthoDT CalcBondsOrtho;
-
-CalcBondsNoBoxFT CalcBondsNoBox;
-CalcBondsNoBoxDT CalcBondsNoBox;
-
 // DECLARE the dispatch functions so we can create function pointers to them
 template <typename T>
 void CalcBondsOrthoDispatch(const T *coords0, const T *coords1, const T *box,
@@ -38,6 +17,8 @@ void CalcBondsNoBoxDispatch(const T *coords0, const T *coords1,
 // function pointer types, see below.
 
 // function pointer types using decltype (gives the type of rvalue @ compile time)
+// here we use the fact that the dispatcher MUST have the same function signature
+// as the function itself
 using CalcBondsOrtho_FptrT = decltype(&CalcBondsOrthoDispatch<float>);
 using CalcBondsOrtho_DptrT = decltype(&CalcBondsOrthoDispatch<double>);
 
