@@ -10,22 +10,24 @@ typedef void CalcBondsOrthoFT(const float *coords0, const float *coords1,
 typedef void CalcBondsOrthoDT(const double *coords0, const double *coords1,
                               const double *box, std::size_t n, double *out);
 
-CalcBondsOrthoFT CalcBondsOrtho, CalcBondsOrthoDispatchF;
-CalcBondsOrthoDT CalcBondsOrtho, CalcBondsOrthoDispatchD;
+CalcBondsOrthoFT CalcBondsOrtho;
+CalcBondsOrthoDT CalcBondsOrtho;
 
+// declare the dispatch function so we can creat function pointers to it
+// 
 template <typename T>
 void CalcBondsOrthoDispatch(const T *coords0, const T *coords1, const T *box,
-                    std::size_t n, T *out);
+                            std::size_t n, T *out);
 
-
-// need to define some types and type traits here possibly move to type traits 
-// header
+// need to define some types and type traits here due to local declaration of 
+// function pointer types, see below.
 
 // function pointer types
 using CalcBondsOrtho_FptrT = decltype(&CalcBondsOrthoDispatch<float>);
 using CalcBondsOrtho_DptrT = decltype(&CalcBondsOrthoDispatch<double>);
 
-// type traits 
+// type traits
+
 template <typename T>
 struct OrthoDispatchTypeToFptrTStruct;
 
@@ -44,8 +46,16 @@ struct OrthoDispatchTypeToFptrTStruct<double>
 template <typename T>
 using OrthoDispatchTypeToFptrT = typename OrthoDispatchTypeToFptrTStruct<T>::type;
 
+// helper class to hold pointers to all the functions
+// has a code for getting and setting the pointers as part of a constexpr
+// branch structure based on the two indices selectT and selectFunc
 
-// helper holds pointers to all the functions
+// selectT | selectFunc    function
+// --------------------------------
+//     0   |    0         CalcBondsOrtho<float>
+//     1   |    0         CalcBondsOrtho<double>
+//     0   |    1         CalcBondsNoBox<float>
+//     1   |    1         CalcBondsNoBox<double>
 class function_pointer_register
 {
 
@@ -59,35 +69,42 @@ public:
         CalcBondsOrtho_Dptr = &CalcBondsOrthoDispatch<double>;
     }
 
-    template <int select, typename FPtrT>
+    template <int selectT, int selectFunc, typename FPtrT>
     void set_ptr(FPtrT fptr)
     {
-        if constexpr (select == 0)
+        if constexpr (selectFunc == 0)
         {
-            CalcBondsOrtho_Fptr = fptr;
-        }
-        else if (select == 1)
-        {
-            CalcBondsOrtho_Dptr = fptr;
+            if constexpr (selectT == 0)
+            {
+                CalcBondsOrtho_Fptr = fptr;
+            }
+            else if (selectT == 1)
+            {
+                CalcBondsOrtho_Dptr = fptr;
+            }
         }
     }
 
-    template <int select>
+    template <int selectT, int selectFunc>
     auto get_ptr()
     {
-        if constexpr (select == 0)
+        if constexpr (selectFunc == 0)
         {
-            return CalcBondsOrtho_Fptr;
-        }
 
-        else if (select == 1)
-        {
-            return CalcBondsOrtho_Dptr;
+            if constexpr (selectT == 0)
+            {
+                return CalcBondsOrtho_Fptr;
+            }
+
+            else if (selectT == 1)
+            {
+                return CalcBondsOrtho_Dptr;
+            }
         }
     }
 };
 
-// Define function prototypes
+// Define function prototypes in each possible dispatched namespace
 
 // pretty ugly macros to avoid repeating ourselves
 // NOTE still needs ; for decl
