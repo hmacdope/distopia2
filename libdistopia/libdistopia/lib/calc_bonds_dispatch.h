@@ -10,42 +10,74 @@ typedef void CalcBondsOrthoFT(const float *coords0, const float *coords1,
 typedef void CalcBondsOrthoDT(const double *coords0, const double *coords1,
                               const double *box, std::size_t n, double *out);
 
+typedef void CalcBondsNoBoxFT(const float *coords0, const float *coords1,
+                              std::size_t n, float *out);
+
+typedef void CalcBondsNoBoxDT(const double *coords0, const double *coords1,
+                              std::size_t n, double *out);
+
 CalcBondsOrthoFT CalcBondsOrtho;
 CalcBondsOrthoDT CalcBondsOrtho;
 
-// declare the dispatch function so we can creat function pointers to it
-// 
+CalcBondsNoBoxFT CalcBondsNoBox;
+CalcBondsNoBoxDT CalcBondsNoBox;
+
+// DECLARE the dispatch functions so we can create function pointers to them
 template <typename T>
 void CalcBondsOrthoDispatch(const T *coords0, const T *coords1, const T *box,
                             std::size_t n, T *out);
 
-// need to define some types and type traits here due to local declaration of 
+template <typename T>
+void CalcBondsNoBoxDispatch(const T *coords0, const T *coords1,
+                            std::size_t n, T *out);
+
+// need to define some types and type traits here due to local declaration of
 // function pointer types, see below.
 
-// function pointer types
+// function pointer types using decltype (gives the type of rvalue @ compile time)
 using CalcBondsOrtho_FptrT = decltype(&CalcBondsOrthoDispatch<float>);
 using CalcBondsOrtho_DptrT = decltype(&CalcBondsOrthoDispatch<double>);
 
-// type traits
+using CalcBondsNoBox_FptrT = decltype(&CalcBondsNoBoxDispatch<float>);
+using CalcBondsNoBox_DptrT = decltype(&CalcBondsNoBoxDispatch<double>);
 
-template <typename T>
-struct OrthoDispatchTypeToFptrTStruct;
+// type traits
+// ------------
+// use this type trait to select a function pointer signature based on floating
+// point type and function number. See table in function pointer registry
+
+template <typename T, int selectFunc>
+struct DispatchTypeToFptrTStruct;
 
 template <>
-struct OrthoDispatchTypeToFptrTStruct<float>
+struct DispatchTypeToFptrTStruct<float, 0>
 {
     using type = CalcBondsOrtho_FptrT;
 };
 
 template <>
-struct OrthoDispatchTypeToFptrTStruct<double>
+struct DispatchTypeToFptrTStruct<double, 0>
 {
     using type = CalcBondsOrtho_DptrT;
 };
 
-template <typename T>
-using OrthoDispatchTypeToFptrT = typename OrthoDispatchTypeToFptrTStruct<T>::type;
+template <>
+struct DispatchTypeToFptrTStruct<float, 1>
+{
+    using type = CalcBondsNoBox_FptrT;
+};
 
+template <>
+struct DispatchTypeToFptrTStruct<double, 1>
+{
+    using type = CalcBondsNoBox_DptrT;
+};
+
+template <typename T, int selectFunc>
+using DispatchTypeToFptrT = typename DispatchTypeToFptrTStruct<T,selectFunc>::type;
+
+// function pointer registry
+//--------------------------
 // helper class to hold pointers to all the functions
 // has a code for getting and setting the pointers as part of a constexpr
 // branch structure based on the two indices selectT and selectFunc
@@ -60,14 +92,26 @@ class function_pointer_register
 {
 
 public:
+    // hold the function pointers
     CalcBondsOrtho_FptrT CalcBondsOrtho_Fptr;
     CalcBondsOrtho_DptrT CalcBondsOrtho_Dptr;
+    CalcBondsNoBox_FptrT CalcBondsNoBox_Fptr;
+    CalcBondsNoBox_DptrT CalcBondsNoBox_Dptr;
 
     function_pointer_register()
     {
+        // CRITICAL, set the function pointer to initially point to dispatcher
         CalcBondsOrtho_Fptr = &CalcBondsOrthoDispatch<float>;
         CalcBondsOrtho_Dptr = &CalcBondsOrthoDispatch<double>;
+        CalcBondsNoBox_Fptr = &CalcBondsNoBoxDispatch<float>;
+        CalcBondsNoBox_Dptr = &CalcBondsNoBoxDispatch<double>;
     }
+
+    // theres probably a better way to do the below but I didnt figure it out.
+    // The constexpr is very important as all this needs to be resolved at
+    // COMPILE TIME. This means also that all the branching will dissapear
+    // and the result will be something like
+    // get_ptr() { return ptr; }
 
     template <int selectT, int selectFunc, typename FPtrT>
     void set_ptr(FPtrT fptr)
@@ -81,6 +125,19 @@ public:
             else if (selectT == 1)
             {
                 CalcBondsOrtho_Dptr = fptr;
+            }
+        }
+
+        else if (selectFunc == 1)
+        {
+            if constexpr (selectT == 0)
+            {
+                CalcBondsNoBox_Fptr = fptr;
+            }
+
+            else if (selectT == 1)
+            {
+                CalcBondsNoBox_Dptr = fptr;
             }
         }
     }
@@ -99,6 +156,19 @@ public:
             else if (selectT == 1)
             {
                 return CalcBondsOrtho_Dptr;
+            }
+        }
+
+        else if (selectFunc == 1)
+        {
+            if constexpr (selectT == 0)
+            {
+                return CalcBondsNoBox_Fptr;
+            }
+
+            else if (selectT == 1)
+            {
+                return CalcBondsNoBox_Dptr;
             }
         }
     }
