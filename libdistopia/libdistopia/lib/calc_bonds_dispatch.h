@@ -13,6 +13,10 @@ template <typename T>
 void CalcBondsNoBoxDispatch(const T *coords0, const T *coords1,
                             std::size_t n, T *out);
 
+template <typename T>
+void CalcBondsIdxOrthoDispatch(const T *coords, const std::size_t *idxs, const T *box,
+                               std::size_t n, T *out);
+
 // need to define some types and type traits here due to local declaration of
 // function pointer types, see below.
 
@@ -24,6 +28,9 @@ using CalcBondsOrtho_DptrT = decltype(&CalcBondsOrthoDispatch<double>);
 
 using CalcBondsNoBox_FptrT = decltype(&CalcBondsNoBoxDispatch<float>);
 using CalcBondsNoBox_DptrT = decltype(&CalcBondsNoBoxDispatch<double>);
+
+using CalcBondsIdxOrtho_FptrT = decltype(&CalcBondsIdxOrthoDispatch<float>);
+using CalcBondsIdxOrtho_DptrT = decltype(&CalcBondsIdxOrthoDispatch<double>);
 
 // type traits
 // ------------
@@ -56,6 +63,19 @@ struct DispatchTypeToFptrTStruct<double, 1>
 {
     using type = CalcBondsNoBox_DptrT;
 };
+
+template <>
+struct DispatchTypeToFptrTStruct<float, 2>
+{
+    using type = CalcBondsIdxOrtho_FptrT;
+};
+
+template <>
+struct DispatchTypeToFptrTStruct<double, 2>
+{
+    using type = CalcBondsIdxOrtho_DptrT;
+};
+
 // define the actual trait
 template <typename T, int selectFunc>
 using DispatchTypeToFptrT = typename DispatchTypeToFptrTStruct<T, selectFunc>::type;
@@ -81,6 +101,8 @@ public:
     CalcBondsOrtho_DptrT CalcBondsOrtho_Dptr;
     CalcBondsNoBox_FptrT CalcBondsNoBox_Fptr;
     CalcBondsNoBox_DptrT CalcBondsNoBox_Dptr;
+    CalcBondsIdxOrtho_FptrT CalcBondsIdxOrtho_Fptr;
+    CalcBondsIdxOrtho_DptrT CalcBondsIdxOrtho_Dptr;
 
     function_pointer_register()
     {
@@ -90,6 +112,8 @@ public:
         CalcBondsOrtho_Dptr = &CalcBondsOrthoDispatch<double>;
         CalcBondsNoBox_Fptr = &CalcBondsNoBoxDispatch<float>;
         CalcBondsNoBox_Dptr = &CalcBondsNoBoxDispatch<double>;
+        CalcBondsIdxOrtho_Fptr = &CalcBondsIdxOrthoDispatch<float>;
+        CalcBondsIdxOrtho_Dptr = &CalcBondsIdxOrthoDispatch<double>;
     }
 
     // theres probably a better way to do the below but I didnt figure it out.
@@ -113,7 +137,7 @@ public:
             }
         }
 
-        else if (selectFunc == 1)
+        else if constexpr (selectFunc == 1)
         {
             if constexpr (selectT == 0)
             {
@@ -125,10 +149,23 @@ public:
                 CalcBondsNoBox_Dptr = fptr;
             }
         }
+
+        else if constexpr (selectFunc == 2)
+        {
+            if constexpr (selectT == 0)
+            {
+                CalcBondsIdxOrtho_Fptr = fptr;
+            }
+
+            else if (selectT == 1)
+            {
+                CalcBondsIdxOrtho_Dptr = fptr;
+            }
+        }
     }
 
     template <int selectT, int selectFunc>
-    auto get_ptr()
+    DispatchTypeToFptrT<IntToDispatchTypeT<selectT>, selectFunc> get_ptr()
     {
         if constexpr (selectFunc == 0)
         {
@@ -144,7 +181,7 @@ public:
             }
         }
 
-        else if (selectFunc == 1)
+        else if constexpr (selectFunc == 1)
         {
             if constexpr (selectT == 0)
             {
@@ -154,6 +191,19 @@ public:
             else if (selectT == 1)
             {
                 return CalcBondsNoBox_Dptr;
+            }
+        }
+
+        else if constexpr (selectFunc == 2)
+        {
+            if constexpr (selectT == 0)
+            {
+                return CalcBondsIdxOrtho_Fptr;
+            }
+
+            else if (selectT == 1)
+            {
+                return CalcBondsIdxOrtho_Dptr;
             }
         }
     }

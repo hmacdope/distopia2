@@ -166,6 +166,20 @@ struct DispatchTypeToIntStruct<double>
     static constexpr int value = 1;
 };
 
+template <int T>
+struct IntToDispatchTypeTStruct;
+
+template <>
+struct IntToDispatchTypeTStruct<0>
+{
+    using type = float;
+};
+
+template <>
+struct IntToDispatchTypeTStruct<1>
+{
+    using type = double;
+};
 
 
 
@@ -186,5 +200,8 @@ constexpr std::size_t ValuesPerPack = sizeof(T) / sizeof(VectorToScalarT<T>);
 
 template<typename T>
 constexpr int DispatchTypeToInt = DispatchTypeToIntStruct<T>::value;
+
+template <int T>
+using IntToDispatchTypeT = typename IntToDispatchTypeTStruct<T>::type;
 
 #endif // DISTOPIA_TYPE_TRAITS_H
