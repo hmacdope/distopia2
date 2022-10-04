@@ -1,7 +1,7 @@
 #if DISTOPIA_DISPATCH // active only if we compile for dispatch
 #if DISTOPIA_USE_SSE1 // only in lowest SIMD version
 
-#define DEBUG_DISPATCH 0
+#define DEBUG_DISPATCH 1
 
 #include "../include/distopia.h"
 #include "calc_bonds_dispatch.h"
@@ -14,12 +14,11 @@
 // global simd config
 constexpr simd_config _SIMD_config = simd_config();
 
-auto _DISPATCH_fptr_register = dispatch_function_pointer_register();
 
-// helper stuff
-auto CalcBondsOrthoF_pointer = &CalcBondsOrthoDispatchF; // function pointer
-auto CalcBondsOrthoD_pointer = &CalcBondsOrthoDispatchD; // function pointer
-
+// register for the function pointers
+function_pointer_register _DISPATCH_fptr_register = function_pointer_register();
+auto CalcBondsOrthoD_pointer = &CalcBondsOrthoDispatchD;
+// initially set the function pointers to point to the dispatcher
 // Dispatch function
 // branches are on _SIMD_config are constexpr so should be trimmed nicely
 // by the compiler
@@ -32,7 +31,7 @@ void CalcBondsOrthoDispatchF(const float *coords0, const float *coords1,
     printf("SIMD AVX2 %i\n", _SIMD_config.has_AVX2);
     printf("SIMD AVX %i\n", _SIMD_config.has_AVX);
     printf("SIMD SSE4_2 %i\n", _SIMD_config.has_SSE4_2);
-    printf("SIMD SSE4_1%i\n", _SIMD_config.has_SSE4_1);
+    printf("SIMD SSE4_1 %i\n", _SIMD_config.has_SSE4_1);
     printf("SIMD SSSE3 %i\n", _SIMD_config.has_SSSE3);
     printf("SIMD SSE3 %i\n", _SIMD_config.has_SSE3);
     printf("SIMD SSE2 %i\n", _SIMD_config.has_SSE1);
@@ -55,54 +54,54 @@ void CalcBondsOrthoDispatchF(const float *coords0, const float *coords1,
     else if (iset >= 8 && _SIMD_config.has_AVX2)
     {
 #if DISTOPIA_AVX2_AVAILABLE
-        CalcBondsOrthoF_pointer = &Ns_AVX2::CalcBondsOrtho; // AVX2
+        _DISPATCH_fptr_register.set_ptr<0, CalcBondsOrtho_FptrT>(&Ns_AVX2::CalcBondsOrtho); // AVX2
 #endif
     }
     else if (iset >= 7 && _SIMD_config.has_AVX)
     {
 #if DISTOPIA_AVX_AVAILABLE
-        CalcBondsOrthoF_pointer = &Ns_AVX::CalcBondsOrtho; // AVX
+        _DISPATCH_fptr_register.set_ptr<0, CalcBondsOrtho_FptrT>(&Ns_AVX::CalcBondsOrtho); // AVX
 #endif
     }
     else if (iset >= 6 && _SIMD_config.has_SSE4_2)
     {
 #if DISTOPIA_SSE4_2_AVAILABLE
-        CalcBondsOrthoF_pointer = &Ns_SSE4_2::CalcBondsOrtho; // SSE4.2
+        _DISPATCH_fptr_register.set_ptr<0, CalcBondsOrtho_FptrT>(&Ns_SSE4_2::CalcBondsOrtho); // SSE4.2
 #endif
     }
     else if (iset >= 5 && _SIMD_config.has_SSE4_1)
     {
 #if DISTOPIA_SSE4_1_AVAILABLE
-        CalcBondsOrthoF_pointer = &Ns_SSE4_1::CalcBondsOrtho; // SSE4.1
+        _DISPATCH_fptr_register.set_ptr<0, CalcBondsOrtho_FptrT>(&Ns_SSE4_1::CalcBondsOrtho); // SSE4.1
 #endif
     }
     else if (iset >= 4 && _SIMD_config.has_SSSE3)
     {
 #if DISTOPIA_SSSE3_AVAILABLE
-        CalcBondsOrthoF_pointer = &Ns_SSSE3::CalcBondsOrtho; // SSSE3
+        _DISPATCH_fptr_register.set_ptr<0, CalcBondsOrtho_FptrT>(&Ns_SSSE3::CalcBondsOrtho); // SSSE3
 #endif
     }
     else if (iset >= 3 && _SIMD_config.has_SSE3)
     {
 #if DISTOPIA_SSE3_AVAILABLE
-        CalcBondsOrthoF_pointer = &Ns_SSE3::CalcBondsOrtho; // SSE3
+        _DISPATCH_fptr_register.set_ptr<0, CalcBondsOrtho_FptrT>(&Ns_SSE3::CalcBondsOrtho); // SSE3
 #endif
     }
     else if (iset >= 2 && _SIMD_config.has_SSE2)
     {
 #if DISTOPIA_SSE2_AVAILABLE
-        CalcBondsOrthoF_pointer = &Ns_SSE2::CalcBondsOrtho; // SSE2
+        _DISPATCH_fptr_register.set_ptr<0, CalcBondsOrtho_FptrT>(&Ns_SSE2::CalcBondsOrtho); // SSE2
 #endif
     }
     else if (iset >= 1 && _SIMD_config.has_SSE1)
     {
 // this should always be the case
 #if DISTOPIA_SSE1_AVAILABLE
-        CalcBondsOrthoF_pointer = &Ns_SSE1::CalcBondsOrtho; // SSE1
+        _DISPATCH_fptr_register.set_ptr<0, CalcBondsOrtho_FptrT>(&Ns_SSE1::CalcBondsOrtho); // SSE1
 #endif
     }
     // continue in the dispatched version of the entry function
-    (*CalcBondsOrthoF_pointer)(coords0, coords1, box, n, out);
+    (*_DISPATCH_fptr_register.get_ptr<0>())(coords0, coords1, box, n, out);
 }
 
 // Dispatch function
@@ -198,7 +197,7 @@ template <>
 void CalcBondsOrtho(const float *coords0, const float *coords1,
                     const float *box, std::size_t n, float *out)
 {
-    (*CalcBondsOrthoF_pointer)(coords0, coords1, box, n, out); // go to dispatched version
+   (*_DISPATCH_fptr_register.get_ptr<0>())(coords0, coords1, box, n, out); // go to dispatched version
 }
 
 template <>

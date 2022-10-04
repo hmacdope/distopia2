@@ -1,6 +1,8 @@
 #ifndef DISTOPIA_CALC_BONDS_DISPATCH_H
 #define DISTOPIA_CALC_BONDS_DISPATCH_H
 
+#include <cstdio>
+
 typedef void CalcBondsOrthoFT(const float *coords0, const float *coords1,
                               const float *box, std::size_t n, float *out);
 
@@ -15,12 +17,18 @@ using CalcBondsOrtho_DptrT = decltype(&CalcBondsOrthoDispatchD);
 
 // need some helpers to hold all the pointers to the functions
 
-class dispatch_function_pointer_register
+class function_pointer_register
 {
 
 public:
     CalcBondsOrtho_FptrT CalcBondsOrtho_Fptr;
     CalcBondsOrtho_DptrT CalcBondsOrtho_Dptr;
+
+    function_pointer_register()
+    {
+        CalcBondsOrtho_Fptr = &CalcBondsOrthoDispatchF;
+        CalcBondsOrtho_Dptr = &CalcBondsOrthoDispatchD;
+    }
 
     template <int select, typename FPtrT>
     void set_ptr(FPtrT fptr)
@@ -32,6 +40,20 @@ public:
         else if (select == 1)
         {
             CalcBondsOrtho_Dptr = fptr;
+        }
+    }
+
+    template <int select>
+    auto get_ptr()
+    {
+        if constexpr (select == 0)
+        {
+            return CalcBondsOrtho_Fptr;
+        }
+
+        else if (select == 1)
+        {
+            return CalcBondsOrtho_Dptr;
         }
     }
 };
