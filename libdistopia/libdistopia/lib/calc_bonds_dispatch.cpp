@@ -254,7 +254,7 @@ void CalcBondsNoBox(const double *coords0, const double *coords1,
 
 //                              CALC_BONDS IDX_ORTHO
 // -----------------------------------------------------------------------------
-/*
+
 // branches are on _SIMD_config are constexpr so should be trimmed nicely
 // by the compiler
 template <typename T>
@@ -369,6 +369,5 @@ void CalcBondsIdxOrtho(const double *coords, const std::size_t *idxs, const doub
     (*_DISPATCH_fptr_register.get_ptr<1, 2>())(coords, idxs, box, n, out); // go to dispatched version
 }
 
-*/
 #endif // DISTOPIA_USE_SSE1
 #endif // DISTOPIA_DISPATCH

@@ -164,6 +164,10 @@ public:
         }
     }
 
+    // the return type here looks a bit painful but basically we go 
+    // <selectT> -> float/double ->
+    // <float/double, selectFunc> -> function pointer signature 
+    // note here that all arms must be constexpr
     template <int selectT, int selectFunc>
     DispatchTypeToFptrT<IntToDispatchTypeT<selectT>, selectFunc> get_ptr()
     {
