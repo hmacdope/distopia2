@@ -2,6 +2,7 @@
 #define DISTOPIA_CALC_BONDS_DISPATCH_H
 
 #include <cstdio>
+#include "distopia_type_traits.h"
 
 typedef void CalcBondsOrthoFT(const float *coords0, const float *coords1,
                               const float *box, std::size_t n, float *out);
@@ -12,11 +13,39 @@ typedef void CalcBondsOrthoDT(const double *coords0, const double *coords1,
 CalcBondsOrthoFT CalcBondsOrtho, CalcBondsOrthoDispatchF;
 CalcBondsOrthoDT CalcBondsOrtho, CalcBondsOrthoDispatchD;
 
-using CalcBondsOrtho_FptrT = decltype(&CalcBondsOrthoDispatchF);
-using CalcBondsOrtho_DptrT = decltype(&CalcBondsOrthoDispatchD);
+template <typename T>
+void CalcBondsOrthoDispatch(const T *coords0, const T *coords1, const T *box,
+                    std::size_t n, T *out);
 
-// need some helpers to hold all the pointers to the functions
 
+// need to define some types and type traits here possibly move to type traits 
+// header
+
+// function pointer types
+using CalcBondsOrtho_FptrT = decltype(&CalcBondsOrthoDispatch<float>);
+using CalcBondsOrtho_DptrT = decltype(&CalcBondsOrthoDispatch<double>);
+
+// type traits 
+template <typename T>
+struct OrthoDispatchTypeToFptrTStruct;
+
+template <>
+struct OrthoDispatchTypeToFptrTStruct<float>
+{
+    using type = CalcBondsOrtho_FptrT;
+};
+
+template <>
+struct OrthoDispatchTypeToFptrTStruct<double>
+{
+    using type = CalcBondsOrtho_DptrT;
+};
+
+template <typename T>
+using OrthoDispatchTypeToFptrT = typename OrthoDispatchTypeToFptrTStruct<T>::type;
+
+
+// helper holds pointers to all the functions
 class function_pointer_register
 {
 
@@ -26,8 +55,8 @@ public:
 
     function_pointer_register()
     {
-        CalcBondsOrtho_Fptr = &CalcBondsOrthoDispatchF;
-        CalcBondsOrtho_Dptr = &CalcBondsOrthoDispatchD;
+        CalcBondsOrtho_Fptr = &CalcBondsOrthoDispatch<float>;
+        CalcBondsOrtho_Dptr = &CalcBondsOrthoDispatch<double>;
     }
 
     template <int select, typename FPtrT>
