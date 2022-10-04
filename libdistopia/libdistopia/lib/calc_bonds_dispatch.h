@@ -5,6 +5,8 @@
 #include "distopia_type_traits.h"
 
 // DECLARE the dispatch functions so we can create function pointers to them
+// we use the fact that the dispatcher MUST have the same function signature
+// as the function itself to use it to make function pointers as well
 template <typename T>
 void CalcBondsOrthoDispatch(const T *coords0, const T *coords1, const T *box,
                             std::size_t n, T *out);
@@ -17,12 +19,14 @@ template <typename T>
 void CalcBondsIdxOrthoDispatch(const T *coords, const std::size_t *idxs, const T *box,
                                std::size_t n, T *out);
 
+template <typename T>
+void CalcBondsIdxNoBoxDispatch(const T *coords, const std::size_t *idxs,
+                               std::size_t n, T *out);
+
 // need to define some types and type traits here due to local declaration of
 // function pointer types, see below.
 
-// function pointer types using decltype (gives the type of rvalue @ compile time)
-// here we use the fact that the dispatcher MUST have the same function signature
-// as the function itself
+// function pointer types using decltype (gives the type of expression compile time)
 using CalcBondsOrtho_FptrT = decltype(&CalcBondsOrthoDispatch<float>);
 using CalcBondsOrtho_DptrT = decltype(&CalcBondsOrthoDispatch<double>);
 
@@ -31,6 +35,9 @@ using CalcBondsNoBox_DptrT = decltype(&CalcBondsNoBoxDispatch<double>);
 
 using CalcBondsIdxOrtho_FptrT = decltype(&CalcBondsIdxOrthoDispatch<float>);
 using CalcBondsIdxOrtho_DptrT = decltype(&CalcBondsIdxOrthoDispatch<double>);
+
+using CalcBondsIdxNoBox_FptrT = decltype(&CalcBondsIdxNoBoxDispatch<float>);
+using CalcBondsIdxNoBox_DptrT = decltype(&CalcBondsIdxNoBoxDispatch<double>);
 
 // type traits
 // ------------
@@ -76,6 +83,18 @@ struct DispatchTypeToFptrTStruct<double, 2>
     using type = CalcBondsIdxOrtho_DptrT;
 };
 
+template <>
+struct DispatchTypeToFptrTStruct<float, 3>
+{
+    using type = CalcBondsIdxNoBox_FptrT;
+};
+
+template <>
+struct DispatchTypeToFptrTStruct<double, 3>
+{
+    using type = CalcBondsIdxNoBox_DptrT;
+};
+
 // define the actual trait
 template <typename T, int selectFunc>
 using DispatchTypeToFptrT = typename DispatchTypeToFptrTStruct<T, selectFunc>::type;
@@ -92,6 +111,10 @@ using DispatchTypeToFptrT = typename DispatchTypeToFptrTStruct<T, selectFunc>::t
 //     1   |    0         CalcBondsOrtho<double>
 //     0   |    1         CalcBondsNoBox<float>
 //     1   |    1         CalcBondsNoBox<double>
+//     0   |    2         CalcBondsIdxOrtho<float>
+//     1   |    2         CalcBondsIdxOrtho<double>
+//     0   |    3         CalcBondsIdxNoBox<float>
+//     1   |    3         CalcBondsIdxNoBox<double>  
 class function_pointer_register
 {
 
@@ -103,6 +126,8 @@ public:
     CalcBondsNoBox_DptrT CalcBondsNoBox_Dptr;
     CalcBondsIdxOrtho_FptrT CalcBondsIdxOrtho_Fptr;
     CalcBondsIdxOrtho_DptrT CalcBondsIdxOrtho_Dptr;
+    CalcBondsIdxNoBox_FptrT CalcBondsIdxNoBox_Fptr;
+    CalcBondsIdxNoBox_DptrT CalcBondsIdxNoBox_Dptr;
 
     function_pointer_register()
     {
@@ -114,6 +139,8 @@ public:
         CalcBondsNoBox_Dptr = &CalcBondsNoBoxDispatch<double>;
         CalcBondsIdxOrtho_Fptr = &CalcBondsIdxOrthoDispatch<float>;
         CalcBondsIdxOrtho_Dptr = &CalcBondsIdxOrthoDispatch<double>;
+        CalcBondsIdxNoBox_Fptr = &CalcBondsIdxNoBoxDispatch<float>;
+        CalcBondsIdxNoBox_Dptr = &CalcBondsIdxNoBoxDispatch<double>;
     }
 
     // theres probably a better way to do the below but I didnt figure it out.
@@ -162,6 +189,19 @@ public:
                 CalcBondsIdxOrtho_Dptr = fptr;
             }
         }
+
+        else if constexpr (selectFunc == 3)
+        {
+            if constexpr (selectT == 0)
+            {
+                CalcBondsIdxNoBox_Fptr = fptr;
+            }
+
+            else if (selectT == 1)
+            {
+                CalcBondsIdxNoBox_Dptr = fptr;
+            }
+        }
     }
 
     // the return type here looks a bit painful but basically we go 
@@ -208,6 +248,19 @@ public:
             else if (selectT == 1)
             {
                 return CalcBondsIdxOrtho_Dptr;
+            }
+        }
+
+        else if constexpr (selectFunc == 3)
+        {
+            if constexpr (selectT == 0)
+            {
+                return CalcBondsIdxNoBox_Fptr;
+            }
+
+            else if (selectT == 1)
+            {
+                return CalcBondsIdxNoBox_Dptr;
             }
         }
     }
