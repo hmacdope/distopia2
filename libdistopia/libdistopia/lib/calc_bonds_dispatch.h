@@ -10,6 +10,32 @@ typedef void CalcBondsOrthoDT(const double *coords0, const double *coords1,
 CalcBondsOrthoFT CalcBondsOrtho, CalcBondsOrthoDispatchF;
 CalcBondsOrthoDT CalcBondsOrtho, CalcBondsOrthoDispatchD;
 
+using CalcBondsOrtho_FptrT = decltype(&CalcBondsOrthoDispatchF);
+using CalcBondsOrtho_DptrT = decltype(&CalcBondsOrthoDispatchD);
+
+// need some helpers to hold all the pointers to the functions
+
+class dispatch_function_pointer_register
+{
+
+public:
+    CalcBondsOrtho_FptrT CalcBondsOrtho_Fptr;
+    CalcBondsOrtho_DptrT CalcBondsOrtho_Dptr;
+
+    template <int select, typename FPtrT>
+    void set_ptr(FPtrT fptr)
+    {
+        if constexpr (select == 0)
+        {
+            CalcBondsOrtho_Fptr = fptr;
+        }
+        else if (select == 1)
+        {
+            CalcBondsOrtho_Dptr = fptr;
+        }
+    }
+};
+
 // Define function prototypes
 
 // pretty ugly macros to avoid repeating ourselves

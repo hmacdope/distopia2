@@ -14,6 +14,8 @@
 // global simd config
 constexpr simd_config _SIMD_config = simd_config();
 
+auto _DISPATCH_fptr_register = dispatch_function_pointer_register();
+
 // helper stuff
 auto CalcBondsOrthoF_pointer = &CalcBondsOrthoDispatchF; // function pointer
 auto CalcBondsOrthoD_pointer = &CalcBondsOrthoDispatchD; // function pointer
@@ -47,7 +49,7 @@ void CalcBondsOrthoDispatchF(const float *coords0, const float *coords1,
     if (iset >= 9 && _SIMD_config.has_AVX512)
     {
 #if DISTOPIA_AVX512_AVAILABLE
-        CalcBondsOrthoF_pointer = &Ns_AVX512::CalcBondsOrtho; // AVX512
+        _DISPATCH_fptr_register.set_ptr<0, CalcBondsOrtho_FptrT>(&Ns_AVX512::CalcBondsOrtho); // AVX512
 #endif
     }
     else if (iset >= 8 && _SIMD_config.has_AVX2)
