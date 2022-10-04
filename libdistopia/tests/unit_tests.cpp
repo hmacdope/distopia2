@@ -357,54 +357,54 @@ public:
 
 TYPED_TEST_SUITE(DistancesTest, ScalarTypes);
 
-// TYPED_TEST(DistancesTest, NoBoxKnownValues0)
-// {
-//     // larger than the maximum possible vector size (16) and an
-//     // odd number for overhang on first loop, see CalcBondsInner.
-//     constexpr std::size_t N = 17;
-//     TypeParam coords0[3 * N];
-//     TypeParam coords1[3 * N];
-//     TypeParam out[N];
+TYPED_TEST(DistancesTest, NoBoxKnownValues0)
+{
+    // larger than the maximum possible vector size (16) and an
+    // odd number for overhang on first loop, see CalcBondsInner.
+    constexpr std::size_t N = 17;
+    TypeParam coords0[3 * N];
+    TypeParam coords1[3 * N];
+    TypeParam out[N];
 
-//     // {0,1,2}, {3,4,5} ...
-//     std::iota(std::begin(coords0), std::end(coords0), 0);
-//     // {1,2,3}, {4,5,6} ...
-//     std::iota(std::begin(coords1), std::end(coords1), 1);
+    // {0,1,2}, {3,4,5} ...
+    std::iota(std::begin(coords0), std::end(coords0), 0);
+    // {1,2,3}, {4,5,6} ...
+    std::iota(std::begin(coords1), std::end(coords1), 1);
 
-//     CalcBondsNoBox(coords0, coords1, N, out);
+    CalcBondsNoBox(coords0, coords1, N, out);
 
-//     // result for every item should be sqrt(3)
-//     TypeParam result = std::sqrt(3);
+    // result for every item should be sqrt(3)
+    TypeParam result = std::sqrt(3);
 
-//     for (int i = 0; i < N; i++)
-//     {
-//         EXPECT_SCALAR_EQ(out[i], result);
-//     }
-// }
+    for (int i = 0; i < N; i++)
+    {
+        EXPECT_SCALAR_EQ(out[i], result);
+    }
+}
 
-// TYPED_TEST(DistancesTest, NoBoxKnownValues1)
-// {
-//     constexpr std::size_t N = 17;
-//     TypeParam coords0[3 * N] = {0};
-//     TypeParam coords1[3 * N] = {0};
-//     TypeParam ref[N];
-//     TypeParam out[N];
+TYPED_TEST(DistancesTest, NoBoxKnownValues1)
+{
+    constexpr std::size_t N = 17;
+    TypeParam coords0[3 * N] = {0};
+    TypeParam coords1[3 * N] = {0};
+    TypeParam ref[N];
+    TypeParam out[N];
 
-//     // string values along the x axis {0,0,0} {1,0,0}, {2,0,0} so corresponding
-//     // distances are just the first value
-//     for (int i = 0; i < N; i++)
-//     {
-//         coords0[3 * i] = i;
-//         ref[i] = i;
-//     }
+    // string values along the x axis {0,0,0} {1,0,0}, {2,0,0} so corresponding
+    // distances are just the first value
+    for (int i = 0; i < N; i++)
+    {
+        coords0[3 * i] = i;
+        ref[i] = i;
+    }
 
-//     CalcBondsNoBox(coords0, coords1, N, out);
+    CalcBondsNoBox(coords0, coords1, N, out);
 
-//     for (int i = 0; i < N; i++)
-//     {
-//         EXPECT_FLOAT_EQ(out[i], ref[i]);
-//     }
-// }
+    for (int i = 0; i < N; i++)
+    {
+        EXPECT_FLOAT_EQ(out[i], ref[i]);
+    }
+}
 
 TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0)
 {
@@ -428,92 +428,92 @@ TYPED_TEST(DistancesTest, CalcBondsOrthoBoxKnownValues0)
     }
 }
 
-// template <typename T>
-// class IdxDistancesTest : public ::testing::Test
-// {
-// public:
-//     // blank, we do all the stuff in each test
-// };
+template <typename T>
+class IdxDistancesTest : public ::testing::Test
+{
+public:
+    // blank, we do all the stuff in each test
+};
 
-// TYPED_TEST_SUITE(IdxDistancesTest, ScalarTypes);
+TYPED_TEST_SUITE(IdxDistancesTest, ScalarTypes);
 
-// TYPED_TEST(IdxDistancesTest, NoBoxKnownValues0)
-// {
-//     // larger than the maximum possible vector size (16)
-//     // for overhang on first loop, see CalcBondsIdxInner.
-//     constexpr std::size_t Nidx = 18;
-//     constexpr std::size_t Ncoord = Nidx * 2;
-//     TypeParam coords[3 * Ncoord];
-//     TypeParam out[Nidx];
-//     std::size_t idx[Ncoord];
+TYPED_TEST(IdxDistancesTest, NoBoxKnownValues0)
+{
+    // larger than the maximum possible vector size (16)
+    // for overhang on first loop, see CalcBondsIdxInner.
+    constexpr std::size_t Nidx = 18;
+    constexpr std::size_t Ncoord = Nidx * 2;
+    TypeParam coords[3 * Ncoord];
+    TypeParam out[Nidx];
+    std::size_t idx[Ncoord];
 
-//     std::iota(std::begin(coords), std::end(coords), 0);
-//     std::iota(std::begin(idx), std::end(idx), 0);
+    std::iota(std::begin(coords), std::end(coords), 0);
+    std::iota(std::begin(idx), std::end(idx), 0);
 
-//     CalcBondsIdxNoBox(coords, idx, Nidx, out);
+    CalcBondsIdxNoBox(coords, idx, Nidx, out);
 
-//     // result for every item should be 3sqrt(3)
-//     TypeParam result = std::sqrt(27);
+    // result for every item should be 3sqrt(3)
+    TypeParam result = std::sqrt(27);
 
-//     for (int i = 0; i < Nidx; i++)
-//     {
-//         EXPECT_SCALAR_EQ(out[i], result);
-//     }
-// }
+    for (int i = 0; i < Nidx; i++)
+    {
+        EXPECT_SCALAR_EQ(out[i], result);
+    }
+}
 
-// TYPED_TEST(IdxDistancesTest, NoBoxKnownValues1)
-// {
-//     constexpr std::size_t Nidx = 18;
-//     constexpr std::size_t Ncoord = Nidx * 2;
-//     TypeParam coords[3 * Ncoord] = {0};
-//     std::size_t idx[Ncoord];
-//     TypeParam out[Nidx];
+TYPED_TEST(IdxDistancesTest, NoBoxKnownValues1)
+{
+    constexpr std::size_t Nidx = 18;
+    constexpr std::size_t Ncoord = Nidx * 2;
+    TypeParam coords[3 * Ncoord] = {0};
+    std::size_t idx[Ncoord];
+    TypeParam out[Nidx];
 
-//     std::iota(std::begin(idx), std::end(idx), 0);
-//     // string values along the x axis {0,0,0} {1,0,0}, {2,0,0} so corresponding
-//     // distances are all just 1.0
+    std::iota(std::begin(idx), std::end(idx), 0);
+    // string values along the x axis {0,0,0} {1,0,0}, {2,0,0} so corresponding
+    // distances are all just 1.0
 
-//     for (int i = 0; i < Ncoord; i++)
-//     {
-//         coords[3 * i] = i;
-//     }
+    for (int i = 0; i < Ncoord; i++)
+    {
+        coords[3 * i] = i;
+    }
 
-//     CalcBondsIdxNoBox(coords, idx, Nidx, out);
+    CalcBondsIdxNoBox(coords, idx, Nidx, out);
 
-//     for (int i = 0; i < Nidx; i++)
-//     {
-//         EXPECT_FLOAT_EQ(out[i], 1.0);
-//     }
-// }
+    for (int i = 0; i < Nidx; i++)
+    {
+        EXPECT_FLOAT_EQ(out[i], 1.0);
+    }
+}
 
-// TYPED_TEST(IdxDistancesTest, CalcBondsOrthoBoxKnownValues0)
-// {
-//     constexpr std::size_t Nidx = 10;
-//     constexpr std::size_t Ncoord = Nidx * 2;
-//     TypeParam coords[3 * Ncoord] = {0};
-//     TypeParam out[Nidx];
-//     std::size_t idx[Ncoord];
-//     int j = 0;
+TYPED_TEST(IdxDistancesTest, CalcBondsOrthoBoxKnownValues0)
+{
+    constexpr std::size_t Nidx = 10;
+    constexpr std::size_t Ncoord = Nidx * 2;
+    TypeParam coords[3 * Ncoord] = {0};
+    TypeParam out[Nidx];
+    std::size_t idx[Ncoord];
+    int j = 0;
 
-//     std::iota(std::begin(idx), std::end(idx), 0);
+    std::iota(std::begin(idx), std::end(idx), 0);
 
-//     // values strung out on x axis {0,0,0} {1,0,0}, {2,0,0}
-//     // alternates with {0,0,0}
-//     for (int i = 0; i < Ncoord; i++)
-//     {
-//         if (i % 2)
-//         {
-//             coords[3 * i] = j;
-//             j += 1;
-//         }
-//     }
-//     TypeParam box[3] = {8, 8, 8};
-//     TypeParam ref[Nidx] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
+    // values strung out on x axis {0,0,0} {1,0,0}, {2,0,0}
+    // alternates with {0,0,0}
+    for (int i = 0; i < Ncoord; i++)
+    {
+        if (i % 2)
+        {
+            coords[3 * i] = j;
+            j += 1;
+        }
+    }
+    TypeParam box[3] = {8, 8, 8};
+    TypeParam ref[Nidx] = {0, 1, 2, 3, 4, 3, 2, 1, 0, 1};
 
-//     CalcBondsIdxOrtho(coords, idx, box, Nidx, out);
+    CalcBondsIdxOrtho(coords, idx, box, Nidx, out);
 
-//     for (int i = 0; i < Nidx; i++)
-//     {
-//         EXPECT_SCALAR_EQ(ref[i], out[i]);
-//     }
-// }
+    for (int i = 0; i < Nidx; i++)
+    {
+        EXPECT_SCALAR_EQ(ref[i], out[i]);
+    }
+}
